@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iC Delta · Einrichtung</title>
+<style>
+/* Gleiche Tonleiter wie das Dashboard (Blau-Design): Blau für Zustände, Rot nur für Fehler. */
+:root {
+  color-scheme: light;
+  --flaeche: #f9f9f7; --karte: #fcfcfb; --karte-tief: #f2f2ef;
+  --ton-1: #0b0b0b; --ton-2: #52514e; --ton-3: #898781;
+  --linie: #e1e0d9; --linie-stark: #c3c2b7;
+  --akzent: #1d6fb8; --akzent-2: #0f9fbf; --akzent-weich: #e6f1fa; --auf-akzent: #fff;
+  --ok: #1d6fb8; --ok-weich: #e2eef9; --kritisch: #d03b3b; --kritisch-weich: #fbecec; --warnung: #b7791f; --warnung-weich: #fdf4e2;
+  --glow: rgb(29 111 184 / .07); --glow-2: transparent;
+  --radius: 14px; --radius-s: 9px; --schatten: 0 1px 2px rgb(0 0 0 / .04); --rand: 1px solid var(--linie);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-thema="hell"]) {
+  color-scheme: dark;
+  --flaeche: #06080c; --karte: rgb(16 20 27 / .78); --karte-tief: #141a24; --linie: rgb(255 255 255 / .06); --linie-stark: rgb(255 255 255 / .11);
+  --ton-1: #fff; --ton-2: #c3c2b7; --ton-3: #8d8b85;
+  --akzent: #48a6f2; --akzent-2: #5fd4e8; --akzent-weich: rgb(72 166 242 / .09); --ok: #5cb0f2; --ok-weich: rgb(72 166 242 / .14);
+  --kritisch: #f05454; --kritisch-weich: rgb(208 59 59 / .17); --warnung: #e3a21a; --warnung-weich: rgb(227 162 26 / .12);
+  --glow: rgb(72 166 242 / .12); --glow-2: rgb(95 212 232 / .05);
+  --schatten: inset 0 1px 0 rgb(255 255 255 / .045), 0 12px 32px rgb(0 0 0 / .42); --rand: 1px solid rgb(255 255 255 / .065); --radius: 18px; } }
+:root[data-thema="dunkel"] {
+  color-scheme: dark;
+  --flaeche: #06080c; --karte: rgb(16 20 27 / .78); --karte-tief: #141a24; --linie: rgb(255 255 255 / .06); --linie-stark: rgb(255 255 255 / .11);
+  --ton-1: #fff; --ton-2: #c3c2b7; --ton-3: #8d8b85;
+  --akzent: #48a6f2; --akzent-2: #5fd4e8; --akzent-weich: rgb(72 166 242 / .09); --ok: #5cb0f2; --ok-weich: rgb(72 166 242 / .14);
+  --kritisch: #f05454; --kritisch-weich: rgb(208 59 59 / .17); --warnung: #e3a21a; --warnung-weich: rgb(227 162 26 / .12);
+  --glow: rgb(72 166 242 / .12); --glow-2: rgb(95 212 232 / .05);
+  --schatten: inset 0 1px 0 rgb(255 255 255 / .045), 0 12px 32px rgb(0 0 0 / .42); --rand: 1px solid rgb(255 255 255 / .065); --radius: 18px; }
+
+* { box-sizing: border-box; min-width: 0; }
+body { margin: 0; color: var(--ton-1); font: 400 13.5px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased; min-height: 100vh;
+  background: radial-gradient(900px 520px at 72% -8%, var(--glow), transparent 70%),
+    radial-gradient(700px 600px at 8% 105%, var(--glow-2), transparent 70%), var(--flaeche); background-attachment: fixed; }
+a { color: var(--akzent); text-decoration: none; } a:hover { text-decoration: underline; }
+code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--karte-tief); border: 1px solid var(--linie); border-radius: 5px; padding: 1px 5px; }
+.zahl { font-variant-numeric: tabular-nums; }
+
+.gestell { display: grid; grid-template-columns: 250px minmax(0, 1fr); max-width: 1120px; margin: 0 auto; padding: 28px 24px 48px; gap: 28px; }
+.marke { display: flex; align-items: center; gap: 10px; font-weight: 650; font-size: 15px; margin-bottom: 26px; }
+.marke i { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg, var(--akzent), var(--akzent-2)); display: grid; place-items: center;
+  color: #fff; font-style: normal; font-size: 15px; box-shadow: 0 6px 18px color-mix(in srgb, var(--akzent) 30%, transparent); }
+.marke small { display: block; font-weight: 400; color: var(--ton-3); font-size: 11.5px; }
+.schritte { list-style: none; margin: 0; padding: 0; position: sticky; top: 24px; }
+.schritte li button { all: unset; box-sizing: border-box; width: 100%; display: flex; gap: 12px; align-items: center; padding: 9px 10px; border-radius: 10px; cursor: pointer; color: var(--ton-2); }
+.schritte li button:hover { background: var(--karte-tief); }
+.schritte li button:focus-visible { outline: 2px solid var(--akzent); }
+.schritte .nr { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--linie-stark); display: grid; place-items: center; font-size: 11.5px; flex: none; }
+.schritte li.aktiv button { background: var(--akzent-weich); color: var(--ton-1); font-weight: 600; }
+.schritte li.aktiv .nr { border-color: var(--akzent); color: var(--akzent); }
+.schritte li.erledigt .nr { background: var(--akzent); border-color: var(--akzent); color: #fff; }
+.schritte li[aria-disabled="true"] button { cursor: default; opacity: .5; }
+.zurueck[hidden] { display: none; }
+.zurueck { margin-top: 18px; display: inline-block; font-size: 12.5px; color: var(--ton-3); }
+
+.karte { background: linear-gradient(180deg, rgb(255 255 255 / .03), rgb(255 255 255 / 0) 46%), var(--karte); border: var(--rand); border-radius: var(--radius);
+  box-shadow: var(--schatten); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+main > .karte { padding: 30px 32px; }
+h1 { font-size: 22px; letter-spacing: -.01em; margin: 0 0 6px; font-weight: 650; }
+h2 { font-size: 14px; margin: 26px 0 10px; font-weight: 600; }
+.lead { color: var(--ton-2); margin: 0 0 22px; max-width: 64ch; font-size: 14px; }
+.leise { color: var(--ton-3); font-size: 12.5px; }
+.demo-band { background: var(--warnung-weich); color: var(--warnung); border-radius: 10px; padding: 8px 12px; font-size: 12.5px; margin-bottom: 18px; font-weight: 500; }
+
+.raster { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.wahl { all: unset; box-sizing: border-box; display: block; border: 1px solid var(--linie-stark); border-radius: 14px; padding: 14px 16px; cursor: pointer; position: relative; background: var(--karte-tief); }
+.wahl:hover { border-color: color-mix(in srgb, var(--akzent) 50%, var(--linie-stark)); }
+.wahl:focus-visible { outline: 2px solid var(--akzent); }
+.wahl[aria-pressed="true"] { border-color: var(--akzent); background: var(--akzent-weich); box-shadow: 0 0 0 1px var(--akzent) inset; }
+.wahl[aria-disabled="true"] { cursor: not-allowed; opacity: .55; }
+.wahl b { display: block; font-size: 14px; margin-bottom: 3px; }
+.wahl span { color: var(--ton-2); font-size: 12.5px; display: block; }
+.wahl em { position: absolute; top: 12px; right: 12px; font-style: normal; font-size: 10.5px; color: var(--akzent); background: var(--akzent-weich); padding: 2px 8px; border-radius: 99px; font-weight: 600; }
+.wahl .werte { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+.wahl .werte i { font-style: normal; font-size: 11px; padding: 1px 7px; border-radius: 99px; border: 1px solid var(--linie-stark); color: var(--ton-2); }
+.wahl .werte i.da { border-color: transparent; background: var(--ok-weich); color: var(--ok); }
+
+.demo-weg { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 14px 16px; margin: 0 0 6px;
+  border: 1px dashed color-mix(in srgb, var(--akzent) 45%, var(--linie-stark)); border-radius: 14px; background: var(--akzent-weich); }
+.demo-weg b { display: block; } .demo-weg span { color: var(--ton-2); font-size: 12.5px; }
+.demo-weg .befehl { display: grid; gap: 3px; } .demo-weg .befehl code { font-size: 13px; padding: 5px 9px; justify-self: start; }
+a.knopf { display: inline-block; text-decoration: none; font-weight: 600; font-size: 13px; padding: 9px 16px; border-radius: 10px; border: 1px solid var(--linie-stark); background: var(--karte); color: var(--ton-1); }
+a.knopf:hover { border-color: var(--akzent); text-decoration: none; }
+.hinweis { border-left: 3px solid var(--akzent); background: var(--akzent-weich); border-radius: 0 10px 10px 0; padding: 10px 14px; color: var(--ton-2); font-size: 12.5px; margin: 14px 0; }
+.hinweis.warn { border-color: var(--warnung); background: var(--warnung-weich); }
+.bedingungen { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.bedingungen strong, .lead strong, .demo-weg strong { color: var(--ton-1); font-weight: 600; }
+.bedingungen li { position: relative; padding-left: 16px; color: var(--ton-2); }
+.bedingungen li::before { content: ""; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--akzent); }
+.haken { display: flex; gap: 10px; align-items: center; margin-top: 22px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--linie-stark); cursor: pointer; font-weight: 500; }
+.haken input { flex: none; width: 18px; height: 18px; accent-color: var(--akzent); }
+
+table.quellen { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+table.quellen th { text-align: left; font-weight: 500; color: var(--ton-3); font-size: 11.5px; padding: 0 10px 8px 0; border-bottom: 1px solid var(--linie); }
+table.quellen td { padding: 10px 10px 10px 0; border-bottom: 1px solid var(--linie); vertical-align: top; }
+table.quellen td:first-child b { display: block; }
+.pille { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 99px; background: var(--karte-tief); border: 1px solid var(--linie); color: var(--ton-2); white-space: nowrap; }
+.pille.ok { background: var(--ok-weich); border-color: transparent; color: var(--ok); }
+.pille.fehler { background: var(--kritisch-weich); border-color: transparent; color: var(--kritisch); }
+details.weitere { margin-top: 12px; } details.weitere summary { cursor: pointer; color: var(--ton-2); font-size: 12.5px; }
+
+.schluessel { display: grid; gap: 14px; }
+.sk { padding: 18px 20px; }
+.sk-kopf { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+.sk-kopf b { font-size: 15px; }
+.sk .was { margin: 6px 0 2px; }
+.sk dl { display: grid; grid-template-columns: max-content 1fr; gap: 3px 14px; margin: 10px 0 0; font-size: 12.5px; }
+.sk dt { color: var(--ton-3); } .sk dd { margin: 0; color: var(--ton-2); }
+.sk .felder { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-top: 14px; }
+.sk label { display: grid; gap: 4px; font-size: 11.5px; color: var(--ton-3); flex: 1 1 220px; }
+input[type=password], input[type=text], input[type=number] { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; padding: 9px 11px; border-radius: 10px;
+  border: 1px solid var(--linie-stark); background: var(--flaeche); color: var(--ton-1); width: 100%; }
+input:focus { outline: 2px solid color-mix(in srgb, var(--akzent) 60%, transparent); outline-offset: 0; border-color: var(--akzent); }
+.sk .zeile { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+.sk .ergebnis { font-size: 12.5px; color: var(--ton-2); }
+.sk .ergebnis.ok { color: var(--ok); } .sk .ergebnis.fehler { color: var(--kritisch); }
+.sk .tg { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: var(--karte-tief); font-size: 12.5px; color: var(--ton-2); }
+.sk.zu .inhalt { display: none; }
+
+button.knopf { font: inherit; font-weight: 600; font-size: 13px; padding: 9px 16px; border-radius: 10px; border: 1px solid var(--linie-stark); background: var(--karte-tief); color: var(--ton-1); cursor: pointer; }
+button.knopf:hover { border-color: var(--akzent); }
+button.knopf.haupt { background: linear-gradient(135deg, var(--akzent), color-mix(in srgb, var(--akzent) 70%, var(--akzent-2))); border-color: transparent; color: #fff;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--akzent) 28%, transparent); }
+button.knopf.leicht { background: none; border-color: transparent; color: var(--ton-2); font-weight: 500; }
+button.knopf.leicht:hover { color: var(--ton-1); }
+button.knopf.rot { color: var(--kritisch); background: none; border-color: transparent; font-weight: 500; }
+button.knopf[disabled] { opacity: .5; cursor: default; }
+.fuss { display: flex; gap: 10px; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--linie); }
+.fuss .rechts { display: flex; gap: 8px; }
+
+.speicher { display: grid; gap: 14px; max-width: 560px; }
+.regler { display: flex; gap: 14px; align-items: center; }
+.regler input[type=range] { flex: 1; accent-color: var(--akzent); }
+.regler input[type=number] { width: 90px; }
+.schalter { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border: 1px solid var(--linie-stark); border-radius: 14px; cursor: pointer; }
+.schalter input { width: 18px; height: 18px; accent-color: var(--akzent); margin-top: 2px; flex: none; }
+.schalter b { display: block; }
+.schalter span { color: var(--ton-2); font-size: 12.5px; }
+
+.test { list-style: none; margin: 0; padding: 0; }
+.test li { display: grid; grid-template-columns: 26px 180px 1fr; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--linie); align-items: center; }
+.test .z { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; }
+.test .z.ok { background: var(--ok-weich); color: var(--ok); }
+.test .z.fehler { background: var(--kritisch-weich); color: var(--kritisch); }
+.test .z.leer { background: var(--karte-tief); color: var(--ton-3); }
+.test .t { color: var(--ton-2); font-size: 12.5px; }
+.online { display: flex; flex-wrap: wrap; gap: 22px; margin: 4px 0 18px; }
+.online div { display: grid; } .online small { color: var(--ton-3); font-size: 11.5px; } .online b { font-size: 17px; font-weight: 600; }
+.laden { color: var(--ton-3); font-size: 12.5px; }
+
+@media (max-width: 820px) {
+  .gestell { grid-template-columns: 1fr; padding: 16px 16px 40px; gap: 16px; }
+  .marke { margin-bottom: 12px; }
+  .schritte { position: static; display: flex; overflow-x: auto; gap: 4px; }
+  .schritte li button { width: auto; white-space: nowrap; padding: 7px 9px; }
+  .schritte .titel { display: none; } .schritte li.aktiv .titel { display: inline; }
+  main > .karte { padding: 20px 18px; }
+  .test li { grid-template-columns: 26px 1fr; } .test .t { grid-column: 2; }
+  table.quellen .weg { display: none; }
+}
+</style>
+<link rel="stylesheet" href="/ui.css">   <!-- gemeinsame Gestaltung aller Seiten (src/marktdaten/ui.css) -->
+</head>
+<body data-app="einrichtung">
+<div class="gestell">
+  <aside>
+    <div class="marke"><i>Δ</i><div>iC Delta<small id="untertitel">Einrichtung</small></div></div>
+    <ol class="schritte" id="schritte"></ol>
+    <a class="zurueck" id="zurueck" href="/" hidden>← zum Dashboard</a>
+  </aside>
+  <main><div class="karte" id="inhalt"><p class="laden">Lade …</p></div></main>
+</div>
+<script>
+'use strict';
+try { const t = localStorage.getItem('thema'); if (t === 'hell' || t === 'dunkel') document.documentElement.dataset.thema = t; } catch (e) {}   // wie im Dashboard
+const SCHRITTE = [
+  { id: 'start', titel: 'Willkommen' },
+  { id: 'betrieb', titel: 'Betrieb und Zugriff' },
+  { id: 'quellen', titel: 'Sofort startklar' },
+  { id: 'freischalten', titel: 'Mehr freischalten' },
+  { id: 'speicher', titel: 'Speicher' },
+  { id: 'test', titel: 'Selbsttest' },
+];
+let S = null, aktiv = 0, wahl = {}, vorlagenWahl = new Set(['dax', 'krypto']), offenKarten = new Set();
+const $ = (s, e = document) => e.querySelector(s);
+const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const gb = (b) => (b / 1e9).toLocaleString('de-DE', { maximumFractionDigits: b > 1e11 ? 0 : 1 });
+
+async function api(pfad, daten) {
+  const r = await fetch(pfad, daten === undefined ? {} : { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-IC-Delta': '1' }, body: JSON.stringify(daten) });
+  if (!r.ok) throw new Error(r.status + ' ' + (await r.text()).slice(0, 120));
+  return r.json();
+}
+async function laden() { S = await api('/api/einrichtung'); wahl = { betriebsart: S.einstellungen.betriebsart || 'server', zugriff: S.einstellungen.zugriff || 'heimnetz',
+  bedingungen: !!S.einstellungen.bedingungen, orderbuch: S.einstellungen.orderbuch ?? true }; }
+async function sichern(extra = {}) { const d = await api('/api/einrichtung', { ...wahl, ...extra }); if (d.fehler) throw new Error(d.fehler); S = { ...S, ...d }; return d; }
+
+function navi() {
+  $('#untertitel').textContent = S.offen ? 'Einrichtung' : 'Einrichtung und Datenquellen';
+  $('#zurueck').hidden = S.offen;
+  $('#schritte').innerHTML = SCHRITTE.map((s, i) => {
+    const gesperrt = i > 0 && !bestaetigt();                 // ohne gespeicherte Bestätigung nur Willkommen
+    const kl = i === aktiv ? 'aktiv' : !gesperrt && (!S.offen || i < aktiv) ? 'erledigt' : '';
+    return `<li class="${kl}" aria-disabled="${gesperrt}"><button data-i="${i}" ${gesperrt ? 'tabindex="-1"' : ''}><span class="nr">${kl === 'erledigt' ? '✓' : i + 1}</span><span class="titel">${s.titel}</span></button></li>`;
+  }).join('');
+}
+$('#schritte').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || b.parentNode.getAttribute('aria-disabled') === 'true') return; gehe(+b.dataset.i); });
+
+function fuss({ weiter = 'Weiter', zurueck = true, spaeter = false, weiterAus = false } = {}) {
+  return `<div class="fuss"><div>${zurueck && aktiv > 0 ? '<button class="knopf leicht" data-akt="zurueck">← Zurück</button>' : ''}</div>
+    <div class="rechts">${spaeter ? '<button class="knopf leicht" data-akt="spaeter">Später</button>' : ''}<button class="knopf haupt" data-akt="weiter" ${weiterAus ? 'disabled' : ''}>${weiter}</button></div></div>`;
+}
+const demoBand = () => S.demo ? '<div class="demo-band">DEMO-BETRIEB · Schlüssel werden nur zum Schein geprüft und nicht gespeichert</div>' : '';
+
+const SEITEN = {
+  start() {
+    return `${demoBand()}<h1>Willkommen bei iC Delta</h1>
+      <p class="lead">iC Delta sammelt Kurse, Abschlüsse und Orderbücher für deine Watchlist <strong>auf diesem Rechner</strong> und zeigt sie in Charts, Analysen und Alarmen. Die Einrichtung dauert <strong>ein paar Minuten</strong>. Jeder Schritt lässt sich später ändern.</p>
+      ${S.demo ? '' : `<div class="demo-weg"><div><b>Erst ausprobieren?</b><span>Die Demo zeigt alles mit <strong>erfundenen Daten</strong> – ohne Konto, ohne Abruf bei Börsen, mit eigenem Datenordner.</span></div>
+        ${S.gegenstueck?.laeuft ? `<a class="knopf" href="${location.protocol}//${location.hostname}:${S.gegenstueck.port}/">Demo öffnen ↗</a>`
+          : `<div class="befehl"><button class="knopf" data-akt="demo-starten">Demo starten</button><span class="leise">oder im Terminal: <code>python -m marktdaten demo</code></span></div>`}</div>`}
+      <h2>Was du wissen solltest</h2>
+      <ul class="bedingungen">
+        <li>Die Daten kommen <strong>direkt von den Börsen und Diensten</strong> zu dir. iC Delta selbst liefert keine Kurse.</li>
+        <li><strong>Öffentlich abrufbar heißt nicht frei nutzbar:</strong> Die meisten Quellen erlauben nur die <strong>private, nicht kommerzielle Nutzung</strong>. Die Bedingung jeder Quelle steht im Schritt „Sofort startklar“.</li>
+        <li>Gesammelte Daten <strong>nicht weitergeben oder veröffentlichen</strong>. Auch ein Zugang für andere zu deinem iC Delta gilt als Weitergabe.</li>
+      </ul>
+      <h2>Haftungsausschluss</h2>
+      <ul class="bedingungen">
+        <li>iC Delta ist ein privates <strong>Lern- und Bastelprojekt</strong>, kostenlos und <strong>ohne Gewähr</strong>. Die Nutzung erfolgt <strong>auf eigenes Risiko</strong>.</li>
+        <li><strong>Keine Anlageberatung:</strong> Kurse, Auswertungen, Formationen, Alarme und Einschätzungen von Claude sind <strong>keine Empfehlung</strong> zum Kauf oder Verkauf.</li>
+        <li><strong>Nur Papierhandel:</strong> Orders sind <strong>Spielgeld</strong> zu Übungs- und Demozwecken. Es gibt <strong>keine Verbindung zu einem Broker</strong>.</li>
+        <li>Daten können <strong>fehlen, verzögert oder falsch</strong> sein. Für Schäden, insbesondere finanzielle Verluste, wird <strong>keine Haftung</strong> übernommen, soweit gesetzlich zulässig.</li>
+      </ul>
+      <label class="haken"><input type="checkbox" id="bed" ${wahl.bedingungen ? 'checked' : ''}> Ich nutze iC Delta privat und auf eigenes Risiko und halte mich an die Bedingungen der Quellen.</label>
+      ${fuss({ weiterAus: !wahl.bedingungen })}`;
+  },
+  betrieb() {
+    const art = [['server', 'Eigener Server', 'Ein Rechner, der durchläuft (z. B. Mac mini, NAS, Mini-PC). Volles Sammeln mit Orderbuch.', 'empfohlen'],
+      ['miete', 'Gemieteter Server', 'Läuft durchgehend. Zugang nur für dich, nie offen im Internet. Download-Volumen beachten.'],
+      ['pc', 'Eigener PC oder Laptop', 'Sammelt nur, solange der Rechner wach ist. Lücken im Ruhezustand werden angezeigt.']];
+    const zu = [['geraet', 'Nur dieses Gerät', 'Erreichbar unter 127.0.0.1, sonst nirgends.'],
+      ['heimnetz', 'Im Heimnetz oder per Tailscale', 'Von Handy und Laptop zu Hause, mit Tailscale auch unterwegs.'],
+      ['unterwegs', 'Von unterwegs', 'Nur über Tailscale oder einen SSH-Tunnel, nie über einen offenen Port.']];
+    const karte = (feld, [w, t, x, em]) => `<button class="wahl" data-feld="${feld}" data-wert="${w}" aria-pressed="${wahl[feld] === w}">${em ? `<em>${em}</em>` : ''}<b>${t}</b><span>${x}</span></button>`;
+    return `${demoBand()}<h1>Wie läuft iC Delta bei dir?</h1>
+      <p class="lead">Der Sammler muss dauerhaft laufen, sonst entstehen Lücken. Davon hängen die Voreinstellungen für Orderbuch und Speicher ab.</p>
+      <div class="raster">${art.map((a) => karte('betriebsart', a)).join('')}</div>
+      ${wahl.betriebsart === 'miete' ? '<div class="hinweis warn">Gemieteter Server: Das Dashboard nie öffentlich freigeben. Zugriff nur über Tailscale oder einen SSH-Tunnel, und nur für dich. Das Xetra-Orderbuch lädt 10 bis 15 GB je Handelstag.</div>' : ''}
+      ${wahl.betriebsart === 'pc' ? '<div class="hinweis warn">Laptop oder PC: Im Ruhezustand sammelt iC Delta nichts. Der Selbsttest und die Datenquellen zeigen solche Lücken an. Für lückenlose Daten ist ein Rechner besser, der durchläuft.</div>' : ''}
+      <h2>Zugriff</h2>
+      <div class="raster">${zu.map((a) => karte('zugriff', a)).join('')}</div>
+      <div class="hinweis">Gerade erreichbar unter: ${(S.hosts || []).map((h) => `<code>http://${esc(h)}:${S.port}/</code>`).join(' ') || '–'}.
+        ${wahl.zugriff !== 'geraet' ? ' Für den Zugriff von anderen Geräten <a href="https://tailscale.com/download" target="_blank" rel="noopener">Tailscale installieren ↗</a> und die Tailscale-Adresse beim Start mitgeben (<code>--host 127.0.0.1,&lt;Tailscale-IP&gt;</code>). Das übernimmt später <code>einrichten.sh</code>.' : ''}</div>
+      ${fuss()}`;
+  },
+  quellen() {
+    const zeile = (q) => `<tr><td><b>${esc(q.titel)}</b><span class="leise">${esc(q.inhalt || '')}</span></td><td class="weg">${esc(q.verzug || '')}</td>
+      <td><span class="pille">${esc(q.nutzung)}</span><div class="leise" style="margin-top:4px">${esc(q.lizenz)} · <a href="${esc(q.info_url)}" target="_blank" rel="noopener">Bedingungen ↗</a></div></td></tr>`;
+    const v = S.vorlagen.map((x) => `<button class="wahl" data-vorlage="${x.name}" aria-pressed="${vorlagenWahl.has(x.name) && x.frei}" aria-disabled="${!x.frei}">
+      ${!x.frei ? '<em>nach Alpaca</em>' : ''}<b>${esc(x.titel)}</b><span>${esc(x.text)}</span>
+      <div class="werte">${x.werte.map((w) => `<i class="${w.da ? 'da' : ''}" title="${w.da ? 'steht schon auf der Watchlist' : ''}">${esc(w.symbol)}</i>`).join('')}</div></button>`).join('');
+    return `${demoBand()}<h1>Sofort startklar – ohne Konto</h1>
+      <p class="lead">Diese Quellen sind öffentlich und brauchen keinen Schlüssel. Sie laufen sofort. Börsendaten aus Europa kommen 15 Minuten verzögert, Krypto live.</p>
+      <table class="quellen"><thead><tr><th>Quelle</th><th class="weg">Verzug</th><th>Nutzung</th></tr></thead><tbody>${S.quellen.map(zeile).join('')}</tbody></table>
+      <details class="weitere"><summary>${S.weitere.length} weitere Quellen ohne Schlüssel für eigene Auswertungen</summary>
+        <table class="quellen" style="margin-top:8px"><tbody>${S.weitere.map((q) => `<tr><td><b>${esc(q.titel)}</b></td><td><span class="pille">${esc(q.nutzung)}</span> <span class="leise">${esc(q.lizenz)}</span></td></tr>`).join('')}</tbody></table></details>
+      <h2>Womit soll deine Watchlist starten?</h2>
+      <div class="raster">${v}</div>
+      <p class="leise" style="margin-top:10px">Weitere Werte fügst du im Dashboard über die Suche hinzu. ${S.offen ? '' : 'Werte, die schon auf der Watchlist stehen, sind markiert.'}</p>
+      ${fuss({ weiter: S.offen ? 'Übernehmen und weiter' : (vorlagenWahl.size ? 'Hinzufügen und weiter' : 'Weiter') })}`;
+  },
+  freischalten() {
+    return `${demoBand()}<h1>Mehr freischalten</h1>
+      <p class="lead">Diese Dienste brauchen ein eigenes, kostenloses Konto. Alles ist optional. Ohne sie läuft iC Delta mit den öffentlichen Quellen weiter. Schlüssel werden nur auf diesem Rechner gespeichert, nur für dich lesbar, und nie wieder angezeigt.</p>
+      <div class="schluessel">${S.schluessel.map(schluesselKarte).join('')}</div>
+      ${fuss({ spaeter: true })}`;
+  },
+  speicher() {
+    const v = S.speicher.vorschlag[wahl.betriebsart] ?? 5, g = S.speicher.obergrenze_gb ?? v;
+    return `${demoBand()}<h1>Speicher und Download</h1>
+      <p class="lead">iC Delta speichert nur Werte deiner Watchlist. Wird die Obergrenze erreicht, löscht es zuerst Aufnahmen, dann alte Rohdateien und Abschlüsse. Kerzen bleiben erhalten.</p>
+      <div class="speicher">
+        <div><b>Obergrenze</b> <span class="leise">· Vorschlag für „${{ server: 'eigener Server', miete: 'gemieteter Server', pc: 'PC oder Laptop' }[wahl.betriebsart]}“: ${v} GB · frei auf dem Laufwerk: ${gb(S.speicher.frei)} GB</span>
+          <div class="regler" style="margin-top:8px"><input type="range" id="grenze-r" min="1" max="${Math.max(10, Math.min(200, Math.round(S.speicher.frei / 1e9 * 0.8)))}" step="1" value="${g}" aria-label="Obergrenze in GB">
+          <input type="number" id="grenze" min="0.5" step="0.5" value="${g}" aria-label="Obergrenze in GB"> <span>GB</span></div>
+          ${g !== v ? `<button class="knopf leicht" data-akt="vorschlag" style="padding-left:0">Vorschlag übernehmen (${v} GB)</button>` : ''}</div>
+        <label class="schalter"><input type="checkbox" id="orderbuch" ${wahl.orderbuch ? 'checked' : ''}>
+          <div><b>Orderbücher sammeln (Xetra, Tradegate, Cboe)</b><span>Grundlage für Orderbuch-Analysen und die Heatmap deutscher Werte. Kostet 10 bis 15 GB Download je Handelstag. Ohne Orderbuch kommen weiter Kurse und Abschlüsse. Das Krypto-Orderbuch läuft immer (rund 90 MB am Tag je Paar).</span></div></label>
+        ${wahl.betriebsart !== 'server' && wahl.orderbuch ? '<div class="hinweis warn">Bei gemieteten Servern und Laptops empfehlen wir, das Orderbuch erst einzuschalten, wenn du es brauchst.</div>' : ''}
+      </div>
+      ${fuss()}`;
+  },
+  test() {
+    const o = S.online, zeit = (t) => new Date(t * 1000).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    return `${demoBand()}<h1>Selbsttest</h1>
+      <p class="lead">Prüft, ob der Dienst läuft, die Quellen erreichbar sind und die Schlüssel funktionieren.</p>
+      ${o && o.letzter ? `<div class="online"><div><small>läuft seit</small><b class="zahl">${zeit(o.seit)}</b></div>
+        <div><small>online in den letzten 7 Tagen</small><b class="zahl">${String(o.anteil).replace('.', ',')} %</b></div>
+        <div><small>Lücken</small><b class="zahl">${o.luecken.length}</b></div></div>
+        ${o.luecken.length ? `<p class="leise">Letzte Lücke: ${zeit(o.luecken.at(-1).von)} bis ${zeit(o.luecken.at(-1).bis)} (${o.luecken.at(-1).minuten} Min.) – der Dienst lief nicht.</p>` : ''}` : ''}
+      <ul class="test" id="test"><li><span></span><span class="laden">Prüfe …</span></li></ul>
+      <div style="margin-top:12px"><button class="knopf" data-akt="testen">Erneut prüfen</button></div>
+      ${fuss({ weiter: S.offen ? 'Fertig – zum Dashboard' : 'Zum Dashboard' })}`;
+  },
+};
+
+function schluesselKarte(k) {
+  const g = k.geprueft, stat = g ? (g.ok ? `<span class="pille ok">verbunden</span>` : `<span class="pille fehler">Fehler</span>`) : k.vorhanden ? '<span class="pille">eingetragen</span>' : '<span class="pille">nicht freigeschaltet</span>';
+  const zu = k.vorhanden && !(g && !g.ok) && !offenKarten.has(k.name);
+  const tg = k.name === 'telegram' && k.vorhanden && g && g.ok && !g.chat
+    ? `<div class="tg">Letzter Schritt: Öffne deinen Bot ${g.bot ? `<a href="https://t.me/${esc(g.bot)}" target="_blank" rel="noopener">@${esc(g.bot)} ↗</a>` : ''} in Telegram und schick ihm <code>/start</code>. Danach:
+       <button class="knopf" data-akt="chat" data-q="telegram" style="margin-left:8px">Chat suchen und Testnachricht senden</button></div>` : '';
+  return `<div class="karte sk ${zu ? 'zu' : ''}" id="sk-${k.name}">
+    <div class="sk-kopf"><div><b>${esc(k.titel)}</b> ${stat}</div>
+      ${k.vorhanden ? `<button class="knopf leicht" data-akt="aufklappen" data-q="${k.name}">${zu ? 'Ändern' : 'Zuklappen'}</button>` : ''}</div>
+    <div class="was">${esc(k.was)}</div>
+    ${g ? `<div class="ergebnis ${g.ok ? 'ok' : 'fehler'}" style="font-size:12.5px">${esc(g.text)}</div>` : ''}
+    ${tg}
+    <div class="inhalt">
+      <dl><dt>Ohne</dt><dd>${esc(k.ohne)}</dd><dt>Tarif</dt><dd>${esc(k.tarif)}</dd><dt>Nutzung</dt><dd>${esc(k.lizenz)}</dd>
+        <dt>So geht's</dt><dd>${esc(k.anleitung)} <a href="${esc(k.anmeldung)}" target="_blank" rel="noopener">${k.name === 'telegram' ? '@BotFather öffnen' : 'Konto anlegen'} ↗</a></dd>
+        <dt>Gespeichert in</dt><dd><code>${esc(k.datei)}</code></dd></dl>
+      <form class="felder" data-q="${k.name}" autocomplete="off">
+        ${k.felder.map((f) => `<label>${esc(f.titel)}<input type="password" name="${f.name}" autocomplete="off" spellcheck="false" data-1p-ignore placeholder="${k.vorhanden ? 'neuen Wert eintragen' : ''}"></label>`).join('')}
+        <button class="knopf haupt" type="submit">Speichern und prüfen</button>
+      </form>
+      <div class="zeile">${k.vorhanden ? `<button class="knopf" data-akt="pruefen" data-q="${k.name}">Verbindung prüfen</button><button class="knopf rot" data-akt="entfernen" data-q="${k.name}">Schlüssel entfernen</button>` : ''}
+        <span class="ergebnis" id="erg-${k.name}"></span></div>
+    </div></div>`;
+}
+
+function zeigen() {
+  navi();
+  $('#inhalt').innerHTML = SEITEN[SCHRITTE[aktiv].id]();
+  if (SCHRITTE[aktiv].id === 'test') testen();
+}
+const bestaetigt = () => !!S.einstellungen.bedingungen;
+function gehe(i) { aktiv = bestaetigt() ? Math.max(0, Math.min(SCHRITTE.length - 1, i)) : 0; zeigen(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+async function weiter() {
+  const id = SCHRITTE[aktiv].id;
+  try {
+    if (id === 'start' || id === 'betrieb') await sichern();
+    if (id === 'quellen' && vorlagenWahl.size) {
+      const frei = [...vorlagenWahl].filter((n) => S.vorlagen.find((v) => v.name === n)?.frei);
+      if (frei.length) { await api('/api/einrichtung/vorlagen', { namen: frei }); if (!S.offen) vorlagenWahl.clear(); await laden(); }
+    }
+    if (id === 'speicher') await sichern({ obergrenze_gb: +$('#grenze').value });
+    if (id === 'test') { await sichern({ fertig: true }); location.href = '/'; return; }
+    gehe(aktiv + 1);
+  } catch (e) { alert(e.message); }
+}
+
+async function testen() {
+  const ul = $('#test'); if (!ul) return;
+  ul.innerHTML = '<li><span></span><span class="laden">Prüfe Quellen und Schlüssel …</span></li>';
+  try {
+    const d = await api('/api/einrichtung/selbsttest', {});
+    ul.innerHTML = d.punkte.map((p) => `<li><span class="z ${p.ok === true ? 'ok' : p.ok === false ? 'fehler' : 'leer'}">${p.ok === true ? '✓' : p.ok === false ? '✕' : '–'}</span><b>${esc(p.was)}</b><span class="t">${esc(p.text)}</span></li>`).join('');
+  } catch (e) { ul.innerHTML = `<li><span class="z fehler">✕</span><b>Selbsttest</b><span class="t">${esc(e.message)}</span></li>`; }
+}
+
+async function schluesselAktion(name, pfad, daten) {
+  const erg = $('#erg-' + name); if (erg) { erg.className = 'ergebnis'; erg.textContent = 'Prüfe …'; }
+  try {
+    const d = await api(pfad, { quelle: name, ...daten });
+    await laden(); offenKarten.delete(name);
+    if (!d.ok) offenKarten.add(name);
+    zeigen();
+    const e2 = $('#erg-' + name); if (e2 && !d.ok && !d.zeit) {   // Prüfergebnisse stehen schon oben in der Karte
+      e2.className = 'ergebnis fehler'; e2.textContent = d.text; }
+  } catch (e) { if (erg) { erg.className = 'ergebnis fehler'; erg.textContent = e.message; } }
+}
+
+document.addEventListener('click', async (e) => {
+  const w = e.target.closest('.wahl');
+  if (w && w.dataset.feld) { wahl[w.dataset.feld] = w.dataset.wert; if (w.dataset.feld === 'betriebsart') wahl.orderbuch = w.dataset.wert === 'server'; zeigen(); return; }
+  if (w && w.dataset.vorlage) { if (w.getAttribute('aria-disabled') === 'true') return; const n = w.dataset.vorlage; vorlagenWahl.has(n) ? vorlagenWahl.delete(n) : vorlagenWahl.add(n); zeigen(); return; }
+  const b = e.target.closest('[data-akt]'); if (!b) return;
+  const a = b.dataset.akt, q = b.dataset.q;
+  if (a === 'weiter') weiter();
+  else if (a === 'zurueck') gehe(aktiv - 1);
+  else if (a === 'spaeter') gehe(aktiv + 1);
+  else if (a === 'testen') testen();
+  else if (a === 'vorschlag') { S.speicher.obergrenze_gb = S.speicher.vorschlag[wahl.betriebsart]; zeigen(); }
+  else if (a === 'aufklappen') { offenKarten.has(q) ? offenKarten.delete(q) : offenKarten.add(q); zeigen(); }
+  else if (a === 'pruefen') schluesselAktion(q, '/api/einrichtung/pruefen', {});
+  else if (a === 'entfernen') { if (confirm('Schlüssel wirklich entfernen? Die Quelle liefert dann keine Daten mehr.')) schluesselAktion(q, '/api/einrichtung/schluessel/entfernen', {}); }
+  else if (a === 'chat') schluesselAktion(q, '/api/einrichtung/telegram', {});
+  else if (a === 'demo-starten') window.__demoStarten?.(() => { location.href = `${location.protocol}//${location.hostname}:${S.gegenstueck.port}/`; });
+});
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'bed') { wahl.bedingungen = e.target.checked; zeigen(); }
+  if (e.target.id === 'orderbuch') { wahl.orderbuch = e.target.checked; zeigen(); }
+});
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'grenze-r') { $('#grenze').value = e.target.value; S.speicher.obergrenze_gb = +e.target.value; }
+  if (e.target.id === 'grenze') { $('#grenze-r').value = e.target.value; S.speicher.obergrenze_gb = +e.target.value; }
+});
+document.addEventListener('submit', (e) => {
+  const f = e.target.closest('form.felder'); if (!f) return;
+  e.preventDefault();
+  const werte = Object.fromEntries(new FormData(f));
+  f.reset();                                              // Eingabe sofort aus dem Formular entfernen
+  schluesselAktion(f.dataset.q, '/api/einrichtung/schluessel', { werte });
+});
+
+(async () => {
+  try { await laden(); } catch (e) { $('#inhalt').innerHTML = `<p>Einrichtung nicht erreichbar: ${esc(e.message)}</p>`; return; }
+  const s = new URLSearchParams(location.search).get('schritt');
+  aktiv = Math.max(0, SCHRITTE.findIndex((x) => x.id === s));
+  if (!S.offen && !s) aktiv = 2;                           // nach der Einrichtung: gleich bei den Datenquellen
+  if (!bestaetigt()) aktiv = 0;                            // auch per ?schritt= nicht an der Bestätigung vorbei
+  if (!S.offen) vorlagenWahl.clear();                       // bestehende Watchlist: nur auf Wunsch ergänzen
+  zeigen();
+})();
+</script>
+<script src="/demo-leiste.js" defer></script>
+</body>
+</html>

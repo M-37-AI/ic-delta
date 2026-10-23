@@ -1,0 +1,26 @@
+# Zugangsdaten
+.env
+*.env
+!.env.example
+
+# Marktdaten gehören nie ins Repo
+daten/
+data/
+*.parquet
+*.json.gz
+*.csv.gz
+*.pcap*
+SYNTH-*
+
+__pycache__/
+*.egg-info/
+.venv/
+build/
+dist/
+*.log
+
+# Sicherungen vor Änderungen (.datei.vor-xyz)
+.*vor-*
+
+# Laufzeitzustand des Agenten
+agent/.routinen.json

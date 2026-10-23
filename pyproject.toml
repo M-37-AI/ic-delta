@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ic-delta"
+version = "0.1.0"
+description = "iC Delta: AI Engine für Marktdaten aus kostenlosen, offiziellen Quellen (Orderbücher, Kurse, Abschlüsse)"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+live = ["websockets>=12"]
+
+[project.scripts]
+marktdaten = "marktdaten.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+marktdaten = ["dashboard/*.html", "dashboard/static/ic-charts/*", "dashboard/static/ic-charts/lib/*"]

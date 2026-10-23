@@ -1,0 +1,818 @@
+/* iC Delta · gemeinsame Gestaltung (ui.css)
+   Eine Quelle für Farben, Schriftstufen, Abstände und Bausteine aller Seiten: Dashboard, Analysen,
+   Einrichtung, AI-Agent-Panel und iC Charts. Vorbild ist die Seite Kurse.
+   Jede Seite lädt diese Datei nach ihrem eigenen CSS und trägt data-app am <body>.
+
+   Schriftstufen (eine Rolle je Stufe):
+     --t-mikro 10.5  Beschriftungen in Großbuchstaben, Tabellenköpfe
+     --t-klein 11.5  Nebentexte, Metazeilen, Pillen, kleine Knöpfe
+     --t-text  12.5  Tabellen, Erklärtexte, Einleitungen
+     --t-ui    13    Bedienung: Navigation, Knöpfe, Eingaben, Grundschrift
+     --t-lese  13.5  Lesetext von Claude und Journal, Titel kleiner Karten
+     --t-titel 16    Rubriken und Kastentitel
+     --t-zahl  19    Kennzahlen, Seitentitel der Einrichtung
+     --t-gross 24    nur der Hauptkurs in Karten
+   Farben: Grün und Rot nur für Kurse, Ergebnisse, Kauf und Verkauf. Alles andere Blau.
+   Radien: Karte 18, Feld und Knopf 12 (innere Karten 12), Marke 8, Pille rund. */
+
+:root, :root:not([data-thema="hell"]), :root[data-thema="dunkel"] {
+  --t-mikro: 10.5px; --t-klein: 11.5px; --t-text: 12.5px; --t-ui: 13px; --t-lese: 13.5px;
+  --t-titel: 16px; --t-zahl: 19px; --t-gross: 24px;
+  --t-lauf: var(--t-lese); --t-kopf: var(--t-titel); --t-wert: var(--t-zahl);
+  --radius: 18px; --radius-m: 12px; --radius-s: 8px;
+  --schrift: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --mono-schrift: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --knopf-h: 36px; --knopf-h-leise: 32px; --knopf-h-klein: 28px;
+  --haupt-verlauf: linear-gradient(135deg, #63bdf7, #3594e6 60%, #2a83d6);
+}
+:root {
+  --flaeche: #f9f9f7; --karte: #fcfcfb; --karte-tief: #f2f2ef;
+  --ton-1: #0b0b0b; --ton-2: #52514e; --ton-3: #898781;
+  --linie: #e1e0d9; --linie-stark: #c3c2b7;
+  --akzent: #1d6fb8; --akzent-2: #0f9fbf; --akzent-weich: #e6f1fa; --auf-akzent: #fff;
+  --ok: #1d6fb8; --ok-weich: #e2eef9;
+  --gut: #0ca30c; --kritisch: #d03b3b; --gut-text: #0a7d38; --kritisch-text: #b42727;
+  --gut-weich: #eaf6ea; --kritisch-weich: #fbecec;
+  --feld: var(--karte-tief); --feld-rand: var(--linie-stark); --glas: var(--karte-tief); --glas-rand: var(--linie);
+  --rand: 1px solid var(--linie); --schatten: 0 1px 2px rgb(0 0 0 / .04), 0 4px 14px rgb(20 30 25 / .05);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-thema="hell"]) {
+  --flaeche: #06080c; --karte: rgb(16 20 27 / .78); --karte-tief: #141a24;
+  --ton-1: #fff; --ton-2: #b6bcbb; --ton-3: #7a8180;
+  --linie: rgb(255 255 255 / .06); --linie-stark: rgb(255 255 255 / .11);
+  --akzent: #48a6f2; --akzent-2: #5fd4e8; --akzent-weich: rgb(72 166 242 / .09); --auf-akzent: #fff;
+  --ok: #5cb0f2; --ok-weich: rgb(72 166 242 / .14);
+  --gut: #2fcf7a; --kritisch: #f05454; --gut-text: #5ee08f; --kritisch-text: #ff7a7a;
+  --gut-weich: rgb(12 163 12 / .16); --kritisch-weich: rgb(208 59 59 / .17);
+  --feld: rgb(255 255 255 / .035); --feld-rand: rgb(255 255 255 / .09); --glas: rgb(255 255 255 / .035); --glas-rand: rgb(255 255 255 / .08);
+  --glow: rgb(72 166 242 / .12); --glow-2: rgb(95 212 232 / .05);
+  --rand: 1px solid rgb(255 255 255 / .065); --schatten: inset 0 1px 0 rgb(255 255 255 / .045), 0 12px 32px rgb(0 0 0 / .42); } }
+:root[data-thema="dunkel"] {
+  --flaeche: #06080c; --karte: rgb(16 20 27 / .78); --karte-tief: #141a24;
+  --ton-1: #fff; --ton-2: #b6bcbb; --ton-3: #7a8180;
+  --linie: rgb(255 255 255 / .06); --linie-stark: rgb(255 255 255 / .11);
+  --akzent: #48a6f2; --akzent-2: #5fd4e8; --akzent-weich: rgb(72 166 242 / .09); --auf-akzent: #fff;
+  --ok: #5cb0f2; --ok-weich: rgb(72 166 242 / .14);
+  --gut: #2fcf7a; --kritisch: #f05454; --gut-text: #5ee08f; --kritisch-text: #ff7a7a;
+  --gut-weich: rgb(12 163 12 / .16); --kritisch-weich: rgb(208 59 59 / .17);
+  --feld: rgb(255 255 255 / .035); --feld-rand: rgb(255 255 255 / .09); --glas: rgb(255 255 255 / .035); --glas-rand: rgb(255 255 255 / .08);
+  --glow: rgb(72 166 242 / .12); --glow-2: rgb(95 212 232 / .05);
+  --rand: 1px solid rgb(255 255 255 / .065); --schatten: inset 0 1px 0 rgb(255 255 255 / .045), 0 12px 32px rgb(0 0 0 / .42); }
+
+/* ============================================================================================
+   1  Grundbausteine (Dashboard, Analysen, Einrichtung)
+   ============================================================================================ */
+body[data-app] { font-family: var(--schrift); font-size: var(--t-ui); line-height: 1.55; }
+body[data-app] [hidden] { display: none !important; }   /* ausgeblendet bleibt ausgeblendet, auch bei Knöpfen mit eigener display-Regel */
+body[data-app] .zahl { font-family: inherit; font-variant-numeric: tabular-nums; }
+
+/* Rubrik: Titel links, Hinweis rechts – wie auf Kurse */
+body[data-app] .rubrik { margin: 30px 0 12px; }
+body[data-app] .rubrik h2 { font-size: var(--t-titel); font-weight: 600; letter-spacing: -.01em; text-transform: none; color: var(--ton-1); }
+body[data-app] .rubrik > .rechts { font-size: var(--t-klein); color: var(--ton-3); }
+body[data-app] .beschriftung, body[data-app] .klein-titel { font-size: var(--t-mikro); letter-spacing: .07em; text-transform: uppercase; color: var(--ton-3); }
+body[data-app] .fussnote { font-size: var(--t-klein); color: var(--ton-3); }
+
+/* Tabellen */
+body[data-app] table { font-size: var(--t-text); }
+body[data-app] th { font-size: var(--t-mikro); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--ton-3); padding: 11px 16px; }
+
+/* Knöpfe: Haupt (blau, 36), Leise (Glas, 32), Gefahr (rot, 36) */
+body[data-app] .haupt-knopf, body[data-app] .lab-los, body[data-app] .ps-haupt, body[data-app] button.knopf.haupt {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: var(--knopf-h); padding: 0 16px;
+  font: 600 var(--t-ui)/1 var(--schrift); color: #fff; border: 0; border-radius: var(--radius-m); cursor: pointer; white-space: nowrap;
+  background: var(--haupt-verlauf); box-shadow: inset 0 1px 0 rgb(255 255 255 / .2), 0 4px 12px rgb(42 131 214 / .2); transform: none; }
+body[data-app] .haupt-knopf:hover, body[data-app] .lab-los:hover, body[data-app] .ps-haupt:hover {
+  filter: brightness(1.08); transform: none; box-shadow: inset 0 1px 0 rgb(255 255 255 / .2), 0 5px 16px rgb(42 131 214 / .28); }
+body[data-app] .leise:is(button, a), body[data-app] button.knopf:not(.haupt):not(.leicht):not(.rot) {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: var(--knopf-h-leise); padding: 0 13px;
+  font: 500 var(--t-text)/1 var(--schrift); color: var(--ton-2); background: var(--glas); border: 1px solid var(--glas-rand);
+  border-radius: 10px; cursor: pointer; white-space: nowrap; }
+body[data-app] .leise:is(button, a):hover, body[data-app] button.knopf:not(.haupt):not(.leicht):not(.rot):hover { color: var(--ton-1); border-color: var(--linie-stark); }
+body[data-app] .gefahr-knopf { display: inline-flex; align-items: center; height: var(--knopf-h); padding: 0 16px; font: 600 var(--t-ui)/1 var(--schrift); border-radius: var(--radius-m); }
+
+/* Eingaben */
+body[data-app] :where(input[type=text], input[type=search], input[type=number], input[type=time], input[type=password], input:not([type]), select, textarea):not(.tage) {
+  font-family: var(--schrift); font-size: var(--t-ui); color: var(--ton-1); background: var(--feld); border: 1px solid var(--feld-rand); border-radius: 10px; }
+body[data-app] :where(input:not([type=checkbox]):not([type=radio]):not([type=range]):not(.tage), select) { min-height: 34px; padding: 6px 11px; }
+body[data-app] :where(textarea) { padding: 10px 12px; line-height: 1.55; }
+body[data-app] :where(input, select, textarea):focus { outline: none; border-color: var(--akzent); box-shadow: 0 0 0 3px var(--akzent-weich); }
+
+/* Umschalter (Filter, Darstellung): eine Form überall */
+body[data-app] :is(.umschalter, .seg, .cl-seg) { display: inline-flex; gap: 2px; padding: 3px; border-radius: var(--radius-m);
+  background: var(--glas); border: 1px solid var(--glas-rand); }
+body[data-app] :is(.umschalter, .seg, .cl-seg) button { font: 500 var(--t-klein)/1.3 var(--schrift); color: var(--ton-2); padding: 5px 11px; border: 0; border-radius: 9px; background: none; box-shadow: none; }
+body[data-app] :is(.umschalter button[aria-pressed="true"], .seg button[aria-selected="true"], .cl-seg button.an) {
+  color: var(--ton-1); font-weight: 600; background: color-mix(in srgb, var(--akzent) 13%, var(--karte-tief));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--akzent) 22%, transparent); }
+
+/* Pillen: Status (farbig, 600) und Marke (neutral, 500) in einer Größe */
+body[data-app] :is(.pille, .zpille, .pill, .spille, .lab-pille, .lab-versuch, .lab-status, .cl-quote-pille, .al-chip, .tag) {
+  font-size: var(--t-klein); line-height: 1.5; padding: 2px 10px; border-radius: 999px; }
+body[data-app] .tag { border-radius: var(--radius-s); }
+body[data-app="analysen"] .marke { font-size: var(--t-klein); line-height: 1.5; padding: 2px 10px; border-radius: 999px; }
+
+/* Karten und Hinweise */
+body[data-app] :is(.boerse-zu, .hinweisband, .nachladeleiste) { border-radius: var(--radius-m); font-size: var(--t-text); }
+
+/* ============================================================================================
+   2  Dashboard
+   ============================================================================================ */
+/* Watchlist-Kasten ist das Vorbild für jeden Einleitungskasten */
+body[data-app="dashboard"] .watch-titel { font-size: var(--t-titel); }
+body[data-app="dashboard"] .watchverwaltung p { font-size: var(--t-text); }
+
+/* Größte Bewegung heute: links Logo und Name, rechts Kurs und darunter Veränderung, unten der Verlauf */
+body[data-app="dashboard"] .beweger { gap: 10px; }
+body[data-app="dashboard"] .bewegerkarte { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "w k" "w p" "f f";
+  align-items: start; gap: 2px 12px; padding: 13px 16px 10px; }
+body[data-app="dashboard"] .bewegerkarte .wertzelle { grid-area: w; align-self: center; gap: 10px; min-width: 0; }
+body[data-app="dashboard"] .bewegerkarte .logo { width: 30px; height: 30px; }
+body[data-app="dashboard"] .bewegerkarte .wertname { font-size: var(--t-text); font-weight: 600; min-width: 0; }
+body[data-app="dashboard"] .bewegerkarte .wertname, body[data-app="dashboard"] .bewegerkarte .wertname .kurz { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body[data-app="dashboard"] .bewegerkarte .wertname .kurz { font-weight: 400; color: var(--ton-3); font-size: var(--t-klein); }
+body[data-app="dashboard"] .b-kurs { grid-area: k; justify-self: end; align-self: end; font-size: var(--t-zahl); line-height: 1.2; white-space: nowrap; }
+body[data-app="dashboard"] .bewegerkarte .pille { grid-area: p; justify-self: end; align-self: start; margin: 2px 0 0; }
+body[data-app="dashboard"] .bewegerkarte .funke { grid-area: f; width: 100%; height: 38px; margin-top: 8px; }
+body[data-app="dashboard"] .bewegerkarte .funke path { vector-effect: non-scaling-stroke; }
+
+/* Kennzahlen als eine Leiste wie Speicher und Datenquellen (Depot) */
+body[data-app="dashboard"] .depot-kpis { gap: 0; background: linear-gradient(180deg, rgb(255 255 255 / .03), rgb(255 255 255 / 0) 46%), var(--karte);
+  border: var(--rand); border-radius: var(--radius); box-shadow: var(--schatten); overflow: hidden; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+body[data-app="dashboard"] .dkpi, body[data-app="dashboard"] .dkpi.haupt { min-height: 0; gap: 3px; padding: 14px 18px; background: none; border: 0;
+  border-right: 1px solid var(--linie); border-radius: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+body[data-app="dashboard"] .dkpi:last-child { border-right: 0; }
+body[data-app="dashboard"] .dkpi.haupt::after { display: none; }
+body[data-app="dashboard"] .dkpi .wert { font-size: var(--t-zahl); letter-spacing: -.015em; line-height: 1.2; }
+body[data-app="dashboard"] .dkpi .wert.klein { font-size: var(--t-zahl); }
+body[data-app="dashboard"] .dkpi .neben { margin-top: 2px; }
+body[data-app="dashboard"] .dkpi-balken { height: 4px; margin: 4px 0 2px; }
+@media (max-width: 1100px) { body[data-app="dashboard"] .dkpi:nth-child(2) { border-right: 0; }
+  body[data-app="dashboard"] .dkpi:nth-child(-n+2) { border-bottom: 1px solid var(--linie); } }
+
+/* Kennzahlen im Überblick: eine Größe */
+body[data-app="dashboard"] :is(.kpi .wert, .haupt-karte .gross, .regel .wert) { font-size: var(--t-zahl); }
+body[data-app="dashboard"] .haupt-karte .lage-titel { font-size: var(--t-titel); }
+
+/* Depot und Journal: Lesetext in einer Größe */
+body[data-app="dashboard"] :is(.journal-text, .trade-claude, .cz, .tb-schreiben textarea, .tb-bearbeiten) { font-size: var(--t-lese); }
+body[data-app="dashboard"] .trade-weg { font-size: var(--t-lese); }
+body[data-app="dashboard"] .tb-suche input { border-radius: 10px; }
+
+/* Kopfleiste: bleibt einzeilig, auch bei offenem Agent-Panel */
+body[data-app="dashboard"].ki-offen .chip { padding: 3px 14px; }
+body[data-app="dashboard"] .kopfleiste { flex-wrap: nowrap; }
+body[data-app="dashboard"] .kopfleiste .chips { flex-wrap: nowrap; overflow: hidden; }
+body[data-app="dashboard"] .kopfleiste .stand { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body[data-app="dashboard"].ki-offen .b-kurs { font-size: var(--t-titel); }
+body[data-app="dashboard"].ki-offen .bewegerkarte .logo { display: none; }
+body[data-app="dashboard"].ki-offen .kopfleiste { gap: 12px; }
+body[data-app="dashboard"] .chip b { font-size: var(--t-lese); }
+
+/* Seitenleiste */
+body[data-app="dashboard"] .seitenleiste nav button { font-size: var(--t-ui); }
+body[data-app="dashboard"] .themawahl button { font-size: var(--t-klein); }
+
+/* AI-Agent-Panel (agent/web/panel.js) */
+body[data-app="dashboard"] #ki-kopf .ki-titel { font-size: var(--t-lese); font-weight: 600; }
+body[data-app="dashboard"] :is(#ki-kopf #ki-modell, #ki-kopf .ki-status, #ki-kopf .ki-titel small) { font-size: var(--t-klein); }
+body[data-app="dashboard"] .ki-msg { font-size: var(--t-lese); line-height: 1.6; }
+body[data-app="dashboard"] .ki-msg.error { font-size: var(--t-text); }
+body[data-app="dashboard"] .ki-karte { border-radius: var(--radius-m); font-size: var(--t-text); }
+body[data-app="dashboard"] :is(.ki-chips button, #ki-einst .ki-reihe button, .ke-knoepfe button) { font-size: var(--t-klein); border-radius: 10px; padding: 6px 11px; }
+body[data-app="dashboard"] :is(#ki-einst .ki-hinweis, #ki-einst label) { font-size: var(--t-klein); }
+body[data-app="dashboard"] .ki-eingabe textarea { font-size: var(--t-lese); }
+body[data-app="dashboard"] #ki-knopf { font-size: var(--t-ui); }
+
+/* ============================================================================================
+   3  Analysen: gleicher Aufbau wie das Dashboard – Einleitungskasten, Kennzahlenleiste, Rubriken
+   ============================================================================================ */
+body[data-app="analysen"] main { max-width: 1280px; padding: 26px 32px 80px; }
+
+/* Kopf: Unterreiter mit Unterstrich, Stand rechts in derselben Zeile */
+body[data-app="analysen"] .kopf { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 0 24px; padding: 0 32px; }
+body[data-app="analysen"] .kopf .steuer { order: 2; margin-left: auto; padding: 10px 0; }
+body[data-app="analysen"] .kopf .stand { font-size: var(--t-klein); color: var(--ton-3); }
+body[data-app="analysen"] .unterreiter { order: 1; margin: 0; gap: 22px; }
+body[data-app="analysen"] .unterreiter button, body[data-app="analysen"] .unterreiter .reiter-alarm {
+  display: inline-flex; align-items: center; gap: 7px; padding: 13px 0 11px; margin-bottom: -1px; font-size: var(--t-ui); color: var(--ton-2);
+  background: none; border: 0; border-bottom: 2px solid transparent; border-radius: 0; box-shadow: none; }
+body[data-app="analysen"] .unterreiter button:hover { color: var(--ton-1); background: none; }
+body[data-app="analysen"] .unterreiter button[aria-selected="true"], body[data-app="analysen"] .unterreiter .reiter-alarm[aria-selected="true"] {
+  color: var(--ton-1); font-weight: 600; background: none; box-shadow: none; border-bottom-color: var(--akzent); }
+body[data-app="analysen"] .unterreiter .trenner { margin: 12px 0; }
+body[data-app="analysen"] .reiter-alarm svg { stroke: currentColor; }
+body[data-app="analysen"] .alarm-zahl { background: var(--akzent); color: #fff; font-size: var(--t-mikro); }
+@keyframes alarm-puls-blau { 50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--akzent) 25%, transparent); } }
+body[data-app="analysen"] .alarm-zahl.frisch { animation-name: alarm-puls-blau; }
+
+/* Einleitungskasten statt Bühne: wie die Watchlist auf Kurse */
+body[data-app="analysen"] :is(.lab-held, .cl-held) {
+  margin: 0 0 6px; padding: 16px 22px; gap: 12px; border-radius: var(--radius); border: var(--rand); border-left: 3px solid var(--akzent);
+  background: radial-gradient(380px 160px at 0% 0%, color-mix(in srgb, var(--akzent) 7%, transparent), transparent 70%),
+    linear-gradient(180deg, rgb(255 255 255 / .025), transparent 46%), var(--karte);
+  box-shadow: var(--schatten); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); overflow: hidden; }
+body[data-app="analysen"] .lab-held::after { display: none; }
+body[data-app="analysen"] .lab-held .lab-marke { display: none; }
+body[data-app="analysen"] :is(.lab-held, .cl-held) { margin-bottom: 14px; }
+body[data-app="analysen"] .cl-held h1 { margin: 8px 0 10px; }
+body[data-app="analysen"] :is(.lab-held h1, .lab-kompakt h1, .cl-held h1) {
+  margin: 0; font-size: var(--t-titel); font-weight: 600; line-height: 1.35; letter-spacing: -.01em; white-space: normal; }
+body[data-app="analysen"] .lab-held h1 span { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--ton-3); font-weight: 400; }
+body[data-app="analysen"] :is(.lab-held p, .lab-held .lab-kopf-text) { margin: 4px 0 0; font-size: var(--t-text); color: var(--ton-2); line-height: 1.5; }
+body[data-app="analysen"] .lab-marke { font-size: var(--t-mikro); letter-spacing: .07em; }
+body[data-app="analysen"] .lab-kopfzeile { align-items: center; }
+
+/* Kennzahlen im Kasten: eine Leiste mit Trennlinien, wie Speicher */
+body[data-app="analysen"] .lab-kopfzahlen { gap: 0; margin: 4px -22px -16px -19px; border-top: 1px solid var(--linie); }
+body[data-app="analysen"] .lab-kopfzahlen > div, body[data-app="analysen"] .lab-kopfzahlen > div.an {
+  padding: 13px 18px 14px; gap: 3px; background: none; border: 0; border-right: 1px solid var(--linie); border-radius: 0; }
+body[data-app="analysen"] .lab-kopfzahlen > div:first-child { padding-left: 19px; }
+body[data-app="analysen"] .lab-kopfzahlen > div:last-child { border-right: 0; }
+body[data-app="analysen"] .lab-kopfzahlen small { font-size: var(--t-mikro); }
+body[data-app="analysen"] .lab-kopfzahlen b { font-size: var(--t-zahl); letter-spacing: -.015em; }
+
+/* Kacheln (Backtesting, Werkstatt, Labor-Ergebnis): Leiste statt Einzelkarten */
+body[data-app="analysen"] :is(.kacheln, .lab-kzs) { gap: 0; border: var(--rand); border-radius: var(--radius); overflow: hidden; box-shadow: var(--schatten);
+  background: linear-gradient(180deg, rgb(255 255 255 / .03), rgb(255 255 255 / 0) 46%), var(--karte); }
+body[data-app="analysen"] :is(.kacheln > .kachel, .kacheln > .kachel:first-child, .lab-kzs > .lab-kz, .lab-kzs > .lab-kz.haupt) {
+  padding: 14px 18px; gap: 3px; border: 0; border-right: 1px solid var(--linie); border-radius: 0; background: none; box-shadow: none;
+  backdrop-filter: none; -webkit-backdrop-filter: none; }
+body[data-app="analysen"] :is(.kacheln > .kachel:last-child, .lab-kzs > .lab-kz:last-child) { border-right: 0; }
+body[data-app="analysen"] :is(.kachel .titel, .lab-kz .titel) { font-size: var(--t-mikro); }
+body[data-app="analysen"] :is(.kachel .wert, .lab-kz .wert) { font-size: var(--t-zahl); letter-spacing: -.015em; line-height: 1.2; }
+body[data-app="analysen"] :is(.kachel .neben, .lab-kz .neben) { font-size: var(--t-klein); margin-top: 2px; }
+
+/* Karten: ein Radius, ein Innenabstand, keine Symbolkacheln vor Titeln */
+body[data-app="analysen"] :is(.lab-eingabe, .lab-verstanden, .lab-script, .lab-pruefen, .lab-kopf, .lab-ergebnis, .lab-warten, .cl-bericht, .cl-bilanz) { padding: 18px 22px; border-radius: var(--radius); }
+body[data-app="analysen"] :is(.al-karte, .lab-studie, .cl-gruppe, .cl-dossier, .al-verlauf, .cw, .cl-balken-karte) { border-radius: var(--radius); }
+body[data-app="analysen"] :is(.cl-markt, .cl-fokus, .lab-claude, .lab-bsp, .lab-schritte li, .lab-achse, .cl-punkte, .cl-gk, .ps-karte) { border-radius: var(--radius-m); }
+body[data-app="analysen"] :is(.lab-eingabe-kopf .lab-stern, .lab-eingabe-kopf .lab-code-ikon, .hinweisband > span:first-child) { display: none; }
+body[data-app="analysen"] .lab-claude > .lab-stern { width: auto; height: auto; background: none; box-shadow: none; color: var(--akzent); font-size: var(--t-lese); }
+body[data-app="analysen"] .lab-eingabe-kopf { margin-bottom: 12px; }
+body[data-app="analysen"] :is(.lab-eingabe-kopf h3, .lab-kopf h2, .cl-bericht-kopf b) { font-size: var(--t-titel); font-weight: 600; letter-spacing: -.01em; }
+body[data-app="analysen"] .cl-ikon { width: 28px; height: 28px; border-radius: 9px; font-size: var(--t-lese); }
+
+/* Hinweisband wie „Xetra ist geschlossen“ auf Kurse */
+body[data-app="analysen"] .hinweisband { padding: 10px 16px; gap: 12px; align-items: center; color: var(--ton-2); }
+
+/* Titel kleiner Karten und Lesetexte */
+body[data-app="analysen"] :is(.lab-studie h4, .al-name b, .lab-bsp strong, .cl-gk-kopf b, .cl-markt h4, .al-bedingung, .lab-schritte li strong, .lab-achse-teil b) { font-size: var(--t-lese); }
+body[data-app="analysen"] :is(.cl-blick li, .cl-satz, .cl-kurz, .lab-text, .lab-claude, .lab-kopf blockquote, .lab-liste, .eo-text, .cl-text, .cl-bericht-text, .cl-briefing, .lab-eingabe textarea, .lab-warten-kopf, .al-text) { font-size: var(--t-lese); }
+body[data-app="analysen"] .cl-blick li { padding-left: 24px; line-height: 1.6; }
+body[data-app="analysen"] .cl-blick li::before { font-size: var(--t-lese); }
+body[data-app="analysen"] .cl-kurz { font-weight: 500; }
+body[data-app="analysen"] :is(.lab-urteil b, .cl-bilanz-satz b, .cl-gk-quote, .cw-titel .cw-kopf .kurs) { font-size: var(--t-zahl); }
+body[data-app="analysen"] .cw-titel .cw-kopf h3 { font-size: var(--t-titel); }
+body[data-app="analysen"] :is(.lab-studie-zahlen b, .kz b) { font-size: var(--t-titel); }
+body[data-app="analysen"] :is(.lab-hinweis, .lab-zeit, .lab-kopf-meta, .cl-hinweis, .cl-legende, .al-zeit, .lab-bsp span, .lab-schritte li span, .lab-studie-kopf,
+  .cl-meta, .lab-meldung, .al-feld > span, .al-name small, .lab-achse-teil span, .cl-gk-text, .cl-fuss, .cl-notiz-zeit, .al-notiz, .lab-regeln, .cl-ganz summary, .cl-mehr-block > summary, .cl-details summary) { font-size: var(--t-klein); }
+body[data-app="analysen"] :is(.lab-label, .cl-punkte dt, .kz .beschriftung, .lab-studie-zahlen small, .lab-urteil small, .lab-achse-skala) { font-size: var(--t-mikro); }
+body[data-app="analysen"] :is(.cl-ganz summary, .cl-mehr-block > summary) { font-size: var(--t-text); }
+
+/* Eingaben und Knöpfe im Labor und bei Alarmen */
+body[data-app="analysen"] :is(.lab-eingabe textarea) { border-radius: var(--radius-m); padding: 12px 14px; min-height: 84px; }
+body[data-app="analysen"] .al-feld :is(select, input) { min-height: 36px; padding: 7px 11px; font-size: var(--t-ui); }
+body[data-app="analysen"] .lab-los { height: var(--knopf-h); }
+body[data-app="analysen"] .lab-los-klein { height: var(--knopf-h-leise); padding: 0 13px; font-size: var(--t-text); }
+body[data-app="analysen"] :is(.lab-wert, .cl-wert) { font-size: var(--t-text); }
+body[data-app="analysen"] :is(.ps-chip, .sprung button, .vorschlag, .cw-fuss .leise) { font-size: var(--t-klein); border-radius: 10px; }
+body[data-app="analysen"] :is(.erkl-knopf, .ki-fragen) { font-size: var(--t-klein); }
+
+/* Tabellen: Zeilenhöhe wie Datenquellen (ohne Logos 44 px) */
+body[data-app="analysen"] th { padding: 11px 12px; }
+body[data-app="analysen"] td { padding: 11px 12px; }
+body[data-app="analysen"] :is(th, td):first-child { padding-left: 16px; }
+body[data-app="analysen"] :is(th, td):last-child { padding-right: 16px; }
+body[data-app="analysen"] .kz .beschriftung { text-transform: none; letter-spacing: 0; font-size: var(--t-klein); }
+body[data-app="analysen"] .cl-tab td { vertical-align: middle; padding-top: 11px; padding-bottom: 11px; }
+body[data-app="analysen"] .cl-tab .cl-begruendung { font-size: var(--t-text); line-height: 1.45; }
+body[data-app="analysen"] .cl-tab .lab-wertzelle b { font-weight: 500; }
+body[data-app="analysen"] .cl-filter { margin-bottom: 12px; }
+
+/* Notizen, Erklärungen */
+body[data-app="analysen"] .erklaerung.klappbar { border-radius: 0 10px 10px 0; font-size: var(--t-text); }
+
+/* ============================================================================================
+   4  Einrichtung: Assistent im selben Raster und in denselben Größen
+   ============================================================================================ */
+body[data-app="einrichtung"] { font-size: var(--t-ui); }
+body[data-app="einrichtung"] h1 { font-size: var(--t-zahl); font-weight: 700; letter-spacing: -.015em; }
+body[data-app="einrichtung"] h2 { font-size: var(--t-titel); letter-spacing: -.01em; }
+body[data-app="einrichtung"] .lead { font-size: var(--t-lese); }
+body[data-app="einrichtung"] .marke { font-size: var(--t-lese); font-weight: 600; }
+body[data-app="einrichtung"] .marke i { border-radius: 10px; width: 32px; height: 32px; background: var(--haupt-verlauf); }
+body[data-app="einrichtung"] .marke small { font-size: var(--t-klein); }
+body[data-app="einrichtung"] .schritte li button { font-size: var(--t-ui); }
+body[data-app="einrichtung"] :is(.wahl b, .sk-kopf b, .schalter b, .demo-weg b) { font-size: var(--t-lese); }
+body[data-app="einrichtung"] :is(.wahl, .demo-weg, .schalter, .sk .tg) { border-radius: var(--radius-m); }
+body[data-app="einrichtung"] .wahl { background: var(--glas); border-color: var(--glas-rand); }
+body[data-app="einrichtung"] .wahl em { font-size: var(--t-mikro); }
+body[data-app="einrichtung"] .wahl .werte i { font-size: var(--t-klein); }
+body[data-app="einrichtung"] .pille { font-size: var(--t-klein); }
+body[data-app="einrichtung"] table.quellen th { font-size: var(--t-mikro); letter-spacing: .06em; text-transform: uppercase; padding: 0 12px 9px 0; }
+body[data-app="einrichtung"] :is(.leise, .laden, .zurueck) { font-size: var(--t-text); }
+body[data-app="einrichtung"] button.knopf { height: var(--knopf-h); padding: 0 16px; border-radius: var(--radius-m); font-size: var(--t-ui); }
+body[data-app="einrichtung"] button.knopf.haupt { box-shadow: inset 0 1px 0 rgb(255 255 255 / .2), 0 4px 12px rgb(42 131 214 / .2); }
+body[data-app="einrichtung"] a.knopf { border-radius: var(--radius-m); padding: 9px 16px; }
+body[data-app="einrichtung"] .online b { font-size: var(--t-zahl); }
+body[data-app="einrichtung"] .hinweis { border-radius: 0 10px 10px 0; }
+body[data-app="einrichtung"] .demo-band { border-radius: var(--radius-m); }
+
+/* ============================================================================================
+   5  iC Charts: Aufbau bleibt, Schrift und Bedienelemente wie im Dashboard
+   ============================================================================================ */
+body[data-app="charts"] { --ui: var(--schrift); --mono: var(--schrift); --r: var(--radius-m); font-family: var(--schrift);
+  --text2: #b6bcbb; --muted: #7a8180; }
+body[data-app="charts"] :is(#pricebox, .chip, .badge, #book, .bt .v, #rpPos, #alarmList li .p) { font-variant-numeric: tabular-nums; }
+body[data-app="charts"] :is(.editor pre, .editor textarea, .out, .ag-tool, .help code, dialog code, .ag-msg code) { font-family: var(--mono-schrift); }
+body[data-app="charts"] .legend { font-family: var(--mono-schrift); }
+
+/* ============================================================================================
+   6  Hell und Dunkel: Glasflächen über Tokens statt fester Weiß-Transparenzen
+   ============================================================================================ */
+body[data-app] :is(.kopfleiste, .kopf) { background: color-mix(in srgb, var(--flaeche) 72%, transparent); border-bottom: 1px solid var(--linie); }
+body[data-app="dashboard"] .seitenleiste:is(:hover, :focus-within) { background: color-mix(in srgb, var(--karte-tief) 94%, transparent); }
+body[data-app="analysen"] :is(.lab-schritte li, .lab-bsp, .lab-wert, .cl-markt, .cl-punkte, .al-chip, .lab-ausstieg label, .lab-claude, .cl-wert, .cl-quote-pille, .cl-ikon) {
+  background: var(--glas); border-color: var(--glas-rand); }
+body[data-app="analysen"] :is(.al-feld select, .al-feld input, .cl-filter select, .lab-eingabe textarea, .lab-ausstieg input) { background: var(--feld); border-color: var(--feld-rand); }
+body[data-app="analysen"] .lab-achse { background: var(--karte-tief); border-color: var(--glas-rand); }
+body[data-app="analysen"] .lab-achse-teil { background: color-mix(in srgb, var(--karte) 85%, transparent); }
+body[data-app="analysen"] .lab-achse-skala { border-top-color: var(--linie); }
+body[data-app="analysen"] .lab-gitter { stroke: var(--linie); }
+body[data-app="analysen"] .ke-schalter input:not(:checked) { background: var(--linie-stark); border-color: var(--glas-rand); }
+body[data-app="dashboard"] :is(.ki-chips button, .ke-knoepfe button, #ki-einst .ki-reihe button) { background: var(--glas); border: 1px solid var(--glas-rand); }
+body[data-app="dashboard"] .ki-karte { background: var(--glas); border: 1px solid var(--glas-rand); }
+
+/* ============================================================================================
+   7  Analysen > Claude: Kernsatz, Im Fokus mit Entscheidungsleiste, laufende Einschätzungen
+   ============================================================================================ */
+body[data-app="analysen"] .cl-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; }
+body[data-app="analysen"] .cl-bilanz-zeile { margin-left: auto; font-size: var(--t-klein); color: var(--ton-2); }
+body[data-app="analysen"] .cl-bilanz-zeile b { font-weight: 600; color: var(--ton-1); }
+body[data-app="analysen"] .cl-bilanz-zeile b.pos { color: var(--gut-text); } body[data-app="analysen"] .cl-bilanz-zeile b.neg { color: var(--kritisch-text); }
+body[data-app="analysen"] .cl-held-kurz h1 { margin: 6px 0 0; max-width: 110ch; }
+body[data-app="analysen"] .cl-held-kurz .cl-ganz { margin-top: 12px; padding-top: 10px; }
+
+/* Morgenbriefing im Berichtsstil: ein Kasten, Titelbänder, Fließtext, Chart mit Achsen und Szenario-Fächer */
+/* Briefing wie die Karte „Neue Strategie“ im Ideen-Labor: weißer Titel, grauer Hinweis, Abschnittsmarke, innere Karten */
+body[data-app="analysen"] .cl-bericht-kasten { margin-bottom: 14px; }
+body[data-app="analysen"] .cl-kernsatz { margin: 0; font-size: var(--t-lese); font-weight: 500; line-height: 1.55; color: var(--ton-1); max-width: 120ch; }
+body[data-app="analysen"] .cl-bilanz-text { margin: 4px 0 0; }
+body[data-app="analysen"] .cl-bilanz-text .cl-bilanz-zeile { margin: 0; }
+body[data-app="analysen"] .cl-highlights { display: grid; gap: 0; }
+body[data-app="analysen"] .hl { padding: 18px 0 16px; border-top: 1px solid var(--linie); }
+body[data-app="analysen"] .lab-label + .cl-highlights .hl:first-child { border-top: 0; padding-top: 6px; }
+body[data-app="analysen"] .hl-kopf { display: flex; align-items: center; gap: 12px; }
+body[data-app="analysen"] .hl-nr { width: 28px; height: 28px; flex: none; display: grid; place-items: center; border-radius: 9px; font-size: var(--t-ui); font-weight: 600;
+  color: var(--akzent); background: color-mix(in srgb, var(--akzent) 14%, transparent); border: 1px solid color-mix(in srgb, var(--akzent) 30%, transparent); }
+body[data-app="analysen"] .hl-kopf h4 { margin: 0; font-size: var(--t-lese); font-weight: 600; color: var(--ton-1); }
+body[data-app="analysen"] .hl-muster { font-size: var(--t-klein); color: var(--ton-3); }
+
+/* Text: These als Einstieg, Herleitung grau, entscheidende Marken blau getönt */
+body[data-app="analysen"] .hl-text { padding: 12px 0 0; max-width: 125ch; }
+body[data-app="analysen"] .hl-text p { margin: 0 0 8px; font-size: var(--t-text); line-height: 1.65; color: var(--ton-2); }
+body[data-app="analysen"] .hl-text .hl-lead { font-size: var(--t-lese); font-weight: 500; line-height: 1.5; color: var(--ton-1); margin-bottom: 6px; }
+body[data-app="analysen"] .hl-text mark { padding: 0 3px; border-radius: 4px; font-weight: 600; color: var(--ton-1); background: color-mix(in srgb, var(--akzent) 18%, transparent); }
+
+/* Chart */
+body[data-app="analysen"] .hl-chart { margin: 6px 0 0; padding: 10px 14px 4px; border: 1px solid var(--glas-rand); border-radius: var(--radius-m);
+  background: var(--karte-tief); }
+body[data-app="analysen"] .hl-legende { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; padding: 2px 2px 8px; font-size: var(--t-klein); color: var(--ton-3); }
+body[data-app="analysen"] .hl-legende i { display: inline-block; width: 18px; height: 0; margin-right: 7px; vertical-align: middle; border-top: 2px solid; }
+body[data-app="analysen"] .hl-legende .l-kurs { border-color: var(--akzent); }
+body[data-app="analysen"] .hl-legende .l-oben { border-color: var(--gut); }
+body[data-app="analysen"] .hl-legende .l-unten { border-color: var(--kritisch); }
+body[data-app="analysen"] .hl-charts { margin-left: auto; border: 0; background: none; padding: 0; font: inherit; font-size: var(--t-klein); color: var(--akzent); cursor: pointer; }
+body[data-app="analysen"] .hl-charts:hover { text-decoration: underline; }
+body[data-app="analysen"] .fok-verlauf { width: 100%; }
+body[data-app="analysen"] .fok-verlauf svg { display: block; }
+body[data-app="analysen"] .fc-raster { stroke: var(--linie); stroke-width: 1; }
+body[data-app="analysen"] .fc-achse { fill: var(--ton-3); font-size: var(--t-mikro); font-variant-numeric: tabular-nums; }
+body[data-app="analysen"] .fc-zukunft { fill: color-mix(in srgb, var(--karte-tief) 70%, transparent); }
+body[data-app="analysen"] .fc-grenze { stroke-width: 1.6; }
+body[data-app="analysen"] .fc-grenze.oben { stroke: var(--gut); opacity: .75; } body[data-app="analysen"] .fc-grenze.unten { stroke: var(--kritisch); opacity: .75; }
+body[data-app="analysen"] .fc-fl-a { stop-color: var(--akzent); stop-opacity: .22; } body[data-app="analysen"] .fc-fl-b { stop-color: var(--akzent); stop-opacity: 0; }
+body[data-app="analysen"] .fc-kurs { fill: none; stroke: var(--akzent); stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
+body[data-app="analysen"] .fc-heute { stroke: var(--ton-3); stroke-width: 1; stroke-dasharray: 4 4; }
+body[data-app="analysen"] .fc-fan { stroke-width: 1.2; stroke-dasharray: 5 4; stroke-linecap: round; }
+body[data-app="analysen"] .fc-fan.oben, body[data-app="analysen"] .fc-ende.oben { stroke: var(--gut); } body[data-app="analysen"] .fc-ende.oben { fill: var(--gut); }
+body[data-app="analysen"] .fc-fan.unten, body[data-app="analysen"] .fc-ende.unten { stroke: var(--kritisch); } body[data-app="analysen"] .fc-ende.unten { fill: var(--kritisch); }
+body[data-app="analysen"] .fc-ziel { font-size: var(--t-klein); font-weight: 600; font-variant-numeric: tabular-nums; }
+body[data-app="analysen"] .fc-ziel.oben { fill: var(--gut-text); } body[data-app="analysen"] .fc-ziel.unten { fill: var(--kritisch-text); }
+body[data-app="analysen"] .fc-jetzt-bg { fill: var(--akzent); }
+body[data-app="analysen"] .fc-jetzt { fill: #fff; font-size: var(--t-klein); font-weight: 600; font-variant-numeric: tabular-nums; }
+body[data-app="analysen"] .fc-punkt { fill: #fff; stroke: var(--akzent); stroke-width: 3; }
+body[data-app="analysen"] .fok-leer { display: grid; place-items: center; height: 200px; font-size: var(--t-klein); color: var(--ton-3); }
+body[data-app="analysen"] .cw { scroll-margin-top: 64px; }
+
+body[data-app="analysen"] .cl-laeuft small { display: block; font-size: var(--t-mikro); color: var(--ton-3); }
+
+body[data-app="analysen"] .cl-laeuft small b { font-weight: 600; }
+
+/* ============================================================================================
+   8  Orderbuch (eigener Bereich): Kopf wie die Watchlist, Heatmap + Live-Buch, Ereignisse, Druck
+   ============================================================================================ */
+body[data-app="dashboard"] .ob-kasten { padding: 18px 22px 20px; }
+body[data-app="dashboard"] .ob-kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+body[data-app="dashboard"] .ob-kopf h2 { margin: 0; font-size: var(--t-titel); font-weight: 600; letter-spacing: -.01em; color: var(--ton-1); text-transform: none; }
+body[data-app="dashboard"] .ob-werte { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+body[data-app="dashboard"] .ob-wert { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 999px; cursor: pointer; font: 500 var(--t-text) var(--schrift);
+  color: var(--ton-2); background: var(--glas); border: 1px solid var(--glas-rand); }
+body[data-app="dashboard"] .ob-wert .logo { width: 24px; height: 24px; font-size: 7.5px; }
+body[data-app="dashboard"] .ob-wert:hover { color: var(--ton-1); border-color: var(--linie-stark); }
+body[data-app="dashboard"] .ob-wert[aria-pressed="true"] { color: var(--ton-1); border-color: color-mix(in srgb, var(--akzent) 55%, transparent); background: color-mix(in srgb, var(--akzent) 12%, transparent); }
+body[data-app="dashboard"] .ob-claude { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 14px; font-size: var(--t-lese); line-height: 1.5; }
+body[data-app="dashboard"] .ob-claude-text { color: var(--ton-1); flex: 1 1 400px; }
+body[data-app="dashboard"] .ob-claude .leise { margin-left: auto; }
+body[data-app="dashboard"] .ob-kpis { margin: 14px -22px 0 -19px; border-top: 1px solid var(--linie); }
+body[data-app="dashboard"] .ob-kpis .kpi:first-child { padding-left: 19px; }
+body[data-app="dashboard"] .ob-haupt { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 12px; }
+body[data-app="dashboard"] .ob-heat { position: relative; padding: 10px 6px 6px; }
+body[data-app="dashboard"] .ob-heat canvas { display: block; cursor: crosshair; }
+body[data-app="dashboard"] .ob-tip { position: absolute; z-index: 3; pointer-events: none; padding: 6px 9px; border-radius: 8px; font-size: var(--t-klein); line-height: 1.4;
+  color: var(--ton-1); background: var(--karte-tief); border: 1px solid var(--linie-stark); box-shadow: 0 6px 18px rgb(0 0 0 / .25); }
+body[data-app="dashboard"] .ob-leiter { padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
+body[data-app="dashboard"] .ob-leiter-kopf { display: flex; justify-content: space-between; font-size: var(--t-klein); color: var(--ton-3); margin-bottom: 6px; }
+body[data-app="dashboard"] .ob-leiter-kopf span:first-child { font-size: var(--t-lese); font-weight: 600; color: var(--ton-1); }
+body[data-app="dashboard"] .ob-spalten, body[data-app="dashboard"] .ob-stufe { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: center; }
+body[data-app="dashboard"] .ob-spalten { font-size: var(--t-mikro); letter-spacing: .06em; text-transform: uppercase; color: var(--ton-3); padding: 0 8px 4px; }
+body[data-app="dashboard"] .ob-spalten span:not(:first-child), body[data-app="dashboard"] .ob-stufe span:not(:first-child) { text-align: right; }
+body[data-app="dashboard"] .ob-stufe { position: relative; padding: 4px 8px; font-size: var(--t-text); border-radius: 5px; }
+body[data-app="dashboard"] .ob-stufe i { position: absolute; top: 1px; bottom: 1px; right: 0; border-radius: 4px; opacity: .2; }
+body[data-app="dashboard"] .ob-stufe.kauf i { background: var(--gut); } body[data-app="dashboard"] .ob-stufe.verkauf i { background: var(--kritisch); }
+body[data-app="dashboard"] .ob-stufe span { position: relative; }
+body[data-app="dashboard"] .ob-stufe.kauf span:first-child { color: var(--gut-text); } body[data-app="dashboard"] .ob-stufe.verkauf span:first-child { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-eur { color: var(--ton-3); }
+body[data-app="dashboard"] .ob-stufe em { position: absolute; left: -6px; top: 50%; transform: translate(-100%, -50%); font-style: normal; font-size: var(--t-mikro); font-weight: 600;
+  color: var(--ton-1); background: var(--akzent); border-radius: 4px; padding: 0 5px; }
+body[data-app="dashboard"] .ob-mitte { text-align: center; padding: 6px 0; margin: 2px 0; font-size: var(--t-klein); color: var(--ton-3);
+  border-top: 1px dashed var(--linie-stark); border-bottom: 1px dashed var(--linie-stark); }
+body[data-app="dashboard"] .ob-unten { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 12px; }
+body[data-app="dashboard"] .ob-ereignisse { display: flex; flex-direction: column; }
+body[data-app="dashboard"] .ob-ereignis { display: grid; grid-template-columns: 46px 22px minmax(0, 1fr); gap: 10px; align-items: start; text-align: left; padding: 11px 16px;
+  border: 0; border-bottom: 1px solid var(--linie); background: none; color: inherit; font: inherit; cursor: pointer; }
+body[data-app="dashboard"] .ob-ereignis:hover, body[data-app="dashboard"] .ob-ereignis.an { background: color-mix(in srgb, var(--akzent) 6%, transparent); }
+body[data-app="dashboard"] .ob-ez { font-size: var(--t-klein); color: var(--ton-3); padding-top: 1px; }
+body[data-app="dashboard"] .ob-es { font-size: var(--t-lese); text-align: center; color: var(--ton-2); }
+body[data-app="dashboard"] .ob-ereignis.spoof .ob-es { color: var(--warnung); } body[data-app="dashboard"] .ob-ereignis.eis .ob-es { color: var(--akzent); }
+body[data-app="dashboard"] .ob-ereignis b { display: block; font-size: var(--t-text); font-weight: 600; }
+body[data-app="dashboard"] .ob-ereignis small { display: block; font-size: var(--t-klein); color: var(--ton-3); margin-top: 1px; }
+body[data-app="dashboard"] .ob-druck { padding: 16px 16px 10px; }
+body[data-app="dashboard"] .ob-druck svg { display: block; width: 100%; height: 150px; }
+body[data-app="dashboard"] .ob-dfl.kauf { fill: color-mix(in srgb, var(--gut) 22%, transparent); } body[data-app="dashboard"] .ob-dfl.verkauf { fill: color-mix(in srgb, var(--kritisch) 22%, transparent); }
+body[data-app="dashboard"] .ob-dlinie { fill: none; stroke: var(--ton-2); stroke-width: 1.4; vector-effect: non-scaling-stroke; }
+body[data-app="dashboard"] .ob-null { stroke: var(--linie-stark); stroke-width: 1; vector-effect: non-scaling-stroke; }
+body[data-app="dashboard"] .ob-dachse { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; font-size: var(--t-klein); color: var(--ton-3); }
+body[data-app="dashboard"] .ob-leer { padding: 24px 16px; text-align: center; font-size: var(--t-text); color: var(--ton-3); }
+@media (max-width: 1100px) { body[data-app="dashboard"] .ob-haupt, body[data-app="dashboard"] .ob-unten { grid-template-columns: 1fr; } }
+
+/* Orderbuch, Signal-Schicht: Regime-Chip, Hinweisband, Signal-Lage mit Bogen, Flow-Spuren, Bilanz */
+body[data-app="dashboard"] .ob-kopf { flex-wrap: wrap; row-gap: 6px; }
+body[data-app="dashboard"] .ob-kopf .leise-text { margin-left: auto; }
+body[data-app="dashboard"] .ob-regime { display: inline-flex; align-items: center; gap: 7px; align-self: center; padding: 3px 11px 3px 9px; border-radius: 999px; font-size: var(--t-klein); font-weight: 600;
+  color: var(--ton-1); background: var(--glas); border: 1px solid var(--glas-rand); text-transform: capitalize; cursor: help; }
+body[data-app="dashboard"] .ob-regime i { width: 8px; height: 8px; border-radius: 50%; background: var(--ton-3); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ton-3) 20%, transparent); }
+body[data-app="dashboard"] .ob-regime.ruhig i { background: var(--akzent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--akzent) 22%, transparent); }
+body[data-app="dashboard"] .ob-regime.aktiv i { background: var(--warnung, #fab219); box-shadow: 0 0 0 3px color-mix(in srgb, var(--warnung, #fab219) 25%, transparent); }
+body[data-app="dashboard"] .ob-regime.stress i { background: var(--kritisch); box-shadow: 0 0 0 3px color-mix(in srgb, var(--kritisch) 25%, transparent); }
+body[data-app="dashboard"] .ob-regime small { font-weight: 400; color: var(--ton-3); text-transform: none; }
+body[data-app="dashboard"] .ob-hinweis { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; padding: 10px 16px; border-radius: var(--radius-m); font-size: var(--t-text); color: var(--ton-2);
+  background: var(--glas); border: 1px solid var(--glas-rand); }
+body[data-app="dashboard"] .ob-hinweis span { display: flex; align-items: center; gap: 10px; }
+body[data-app="dashboard"] .ob-hinweis i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--akzent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--akzent) 20%, transparent); }
+
+/* Signal-Lage: links der Bogen mit Stufe und Text, rechts die aktiven Signale */
+body[data-app="dashboard"] .ob-lage { display: grid; grid-template-columns: minmax(300px, 420px) minmax(0, 1fr); gap: 12px; }
+body[data-app="dashboard"] .ob-lage-leer { grid-column: 1 / -1; padding: 28px 20px; text-align: center; font-size: var(--t-text); color: var(--ton-3); }
+body[data-app="dashboard"] .ob-lage-karte { position: relative; padding: 18px 22px 16px; display: flex; flex-direction: column; align-items: center; text-align: center; overflow: hidden; }
+body[data-app="dashboard"] .ob-lage-karte.kauf { background: radial-gradient(360px 180px at 50% 0%, color-mix(in srgb, var(--gut) 10%, transparent), transparent 70%), var(--karte); }
+body[data-app="dashboard"] .ob-lage-karte.verkauf { background: radial-gradient(360px 180px at 50% 0%, color-mix(in srgb, var(--kritisch) 10%, transparent), transparent 70%), var(--karte); }
+body[data-app="dashboard"] .ob-bogen { width: 100%; max-width: 260px; height: auto; display: block; }
+body[data-app="dashboard"] .ob-bogen .spur { fill: none; stroke: var(--karte-tief); stroke-width: 10; stroke-linecap: round; }
+body[data-app="dashboard"] .ob-bogen .fuell { fill: none; stroke-width: 10; stroke-linecap: round; }
+body[data-app="dashboard"] .ob-bogen .fuell.kauf { stroke: var(--gut); } body[data-app="dashboard"] .ob-bogen .fuell.verkauf { stroke: var(--kritisch); }
+body[data-app="dashboard"] .ob-bogen .null { stroke: var(--linie-stark); stroke-width: 1.5; }
+body[data-app="dashboard"] .ob-bogen .zeiger { fill: var(--karte); stroke: var(--ton-2); stroke-width: 3; }
+body[data-app="dashboard"] .ob-bogen .zeiger.kauf { stroke: var(--gut); } body[data-app="dashboard"] .ob-bogen .zeiger.verkauf { stroke: var(--kritisch); }
+body[data-app="dashboard"] .ob-bogen .achse { fill: var(--ton-3); font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase; }
+body[data-app="dashboard"] .ob-lage-stufe { margin-top: -58px; font-size: var(--t-mikro); letter-spacing: .08em; text-transform: uppercase; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-lage-karte.setup .ob-lage-stufe { color: var(--akzent); font-weight: 600; }
+body[data-app="dashboard"] .ob-lage-score { font-size: var(--t-gross); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; color: var(--ton-1); }
+body[data-app="dashboard"] .ob-lage-karte.kauf .ob-lage-score { color: var(--gut-text); } body[data-app="dashboard"] .ob-lage-karte.verkauf .ob-lage-score { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-lage-score small { display: block; font-size: var(--t-klein); font-weight: 500; letter-spacing: 0; color: var(--ton-3); margin-top: 2px; }
+body[data-app="dashboard"] .ob-lage-text { margin: 12px 0 0; font-size: var(--t-lese); line-height: 1.5; color: var(--ton-1); max-width: 46ch; }
+body[data-app="dashboard"] .ob-bausteine { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 14px; }
+body[data-app="dashboard"] .ob-chip { --f: 0%; display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px 3px 8px; border-radius: 999px; font-size: var(--t-klein); font-weight: 500; color: var(--ton-1);
+  border: 1px solid var(--glas-rand); background: linear-gradient(90deg, color-mix(in srgb, var(--ton-3) 22%, transparent) var(--f), var(--glas) var(--f)); }
+body[data-app="dashboard"] .ob-chip.kauf { border-color: color-mix(in srgb, var(--gut) 35%, transparent); background: linear-gradient(90deg, color-mix(in srgb, var(--gut) 24%, transparent) var(--f), var(--glas) var(--f)); }
+body[data-app="dashboard"] .ob-chip.verkauf { border-color: color-mix(in srgb, var(--kritisch) 35%, transparent); background: linear-gradient(90deg, color-mix(in srgb, var(--kritisch) 24%, transparent) var(--f), var(--glas) var(--f)); }
+body[data-app="dashboard"] .ob-chip b { font-weight: 600; color: var(--ton-2); font-variant-numeric: tabular-nums; }
+body[data-app="dashboard"] .ob-ort { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--linie); width: 100%; font-size: var(--t-klein); color: var(--ton-3); }
+body[data-app="dashboard"] .ob-signale { display: flex; flex-direction: column; overflow: hidden; }
+body[data-app="dashboard"] .ob-signale-kopf { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 16px 8px; font-size: var(--t-lese); font-weight: 600; color: var(--ton-1); }
+body[data-app="dashboard"] .ob-signal { display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 11px 16px; border: 0; border-top: 1px solid var(--linie); background: none; color: inherit; font: inherit; cursor: pointer; position: relative; }
+body[data-app="dashboard"] .ob-signal::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--ton-3); }
+body[data-app="dashboard"] .ob-signal.kauf::before { background: var(--gut); } body[data-app="dashboard"] .ob-signal.verkauf::before { background: var(--kritisch); }
+body[data-app="dashboard"] .ob-signal:hover { background: color-mix(in srgb, var(--akzent) 6%, transparent); }
+body[data-app="dashboard"] .ob-sig-kopf { display: flex; align-items: center; gap: 8px; min-width: 0; }
+body[data-app="dashboard"] .ob-sig-kopf b { font-size: var(--t-text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body[data-app="dashboard"] .ob-sig-pfeil { font-size: var(--t-text); color: var(--ton-2); }
+body[data-app="dashboard"] .ob-signal.kauf .ob-sig-pfeil { color: var(--gut-text); } body[data-app="dashboard"] .ob-signal.verkauf .ob-sig-pfeil { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-sig-score { flex: 1 1 60px; max-width: 120px; height: 5px; border-radius: 3px; background: var(--karte-tief); overflow: hidden; margin-left: auto; }
+body[data-app="dashboard"] .ob-sig-score i { display: block; height: 100%; border-radius: 3px; background: var(--ton-3); }
+body[data-app="dashboard"] .ob-signal.kauf .ob-sig-score i { background: var(--gut); } body[data-app="dashboard"] .ob-signal.verkauf .ob-sig-score i { background: var(--kritisch); }
+body[data-app="dashboard"] .ob-sig-kopf > .zahl { font-size: var(--t-klein); font-weight: 600; color: var(--ton-2); min-width: 2ch; text-align: right; }
+body[data-app="dashboard"] .ob-sig-meta { font-size: var(--t-klein); color: var(--ton-3); white-space: nowrap; }
+body[data-app="dashboard"] .ob-sig-text { font-size: var(--t-text); color: var(--ton-2); line-height: 1.45; }
+body[data-app="dashboard"] .ob-signal small { font-size: var(--t-klein); color: var(--ton-3); }
+
+/* Flow: Spuren links, Schalter und Terminmarkt rechts; Zeitlinie über beide Zeichenflächen */
+body[data-app="dashboard"] .ob-flow { position: relative; padding: 10px 6px 6px; }
+body[data-app="dashboard"] .ob-flow canvas { display: block; cursor: crosshair; }
+body[data-app="dashboard"] .ob-cursor { position: absolute; z-index: 2; width: 0; border-left: 1px dashed var(--ton-3); pointer-events: none; opacity: .7; }
+body[data-app="dashboard"] .ob-flow-legende { padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; align-self: start; }
+body[data-app="dashboard"] .ob-spur { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: center; gap: 9px; padding: 7px 8px; border: 0; border-radius: 8px; background: none; color: var(--ton-3); font: inherit; font-size: var(--t-text); text-align: left; cursor: pointer; }
+body[data-app="dashboard"] .ob-spur:hover { background: color-mix(in srgb, var(--akzent) 6%, transparent); }
+body[data-app="dashboard"] .ob-spur i { width: 10px; height: 10px; border-radius: 3px; border: 1.5px solid var(--linie-stark); }
+body[data-app="dashboard"] .ob-spur.an { color: var(--ton-1); }
+body[data-app="dashboard"] .ob-spur.an i { background: var(--akzent); border-color: var(--akzent); }
+body[data-app="dashboard"] .ob-spur b { font-weight: 600; color: var(--ton-2); white-space: nowrap; }
+body[data-app="dashboard"] .ob-spur b.kauf { color: var(--gut-text); } body[data-app="dashboard"] .ob-spur b.verkauf { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-spur b small { font-weight: 400; color: var(--ton-3); margin-left: 4px; }
+body[data-app="dashboard"] .ob-perp { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--linie); display: flex; flex-direction: column; gap: 4px; }
+body[data-app="dashboard"] .ob-perp > div { display: flex; justify-content: space-between; gap: 10px; padding: 2px 8px; font-size: var(--t-text); color: var(--ton-3); }
+body[data-app="dashboard"] .ob-perp .beschriftung { padding: 0 8px 4px; }
+body[data-app="dashboard"] .ob-perp b { color: var(--ton-1); font-weight: 600; }
+body[data-app="dashboard"] .ob-perp b.kauf { color: var(--gut-text); } body[data-app="dashboard"] .ob-perp b.verkauf { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-perp b small { font-weight: 400; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-ereignis.sig-kauf .ob-es { color: var(--gut-text); } body[data-app="dashboard"] .ob-ereignis.sig-verkauf .ob-es { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-tip b.kauf { color: var(--gut-text); } body[data-app="dashboard"] .ob-tip b.verkauf { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-tip span { color: var(--ton-2); }
+
+/* Datenstrom über der Heatmap: Regen links, Eingang rechts; beide Kästen gehen nahtlos in Heatmap und Live-Buch über,
+   damit man sieht: was oben einfällt, wird darunter verdichtet */
+body[data-app="dashboard"] .ob-strom > .rahmen { height: 150px; }
+body[data-app="dashboard"] .ob-regen { position: relative; overflow: hidden; padding: 0 6px; }
+body[data-app="dashboard"] .ob-regen canvas { display: block; }
+body[data-app="dashboard"] .ob-regen-titel { position: absolute; top: 10px; left: 16px; right: 16px; font-size: var(--t-klein); color: var(--ton-2); pointer-events: none;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body[data-app="dashboard"] .ob-regen-titel span { color: var(--ton-3); }
+body[data-app="dashboard"] .ob-regen-titel i { display: inline-block; width: 8px; height: 8px; margin-right: 5px; border-radius: 50%; vertical-align: 0; }
+body[data-app="dashboard"] .ob-regen-titel i:not(:first-child) { margin-left: 10px; }
+body[data-app="dashboard"] .ob-regen-titel i.kauf { background: var(--gut); box-shadow: 0 0 6px var(--gut); }
+body[data-app="dashboard"] .ob-regen-titel i.verkauf { background: var(--kritisch); box-shadow: 0 0 6px var(--kritisch); }
+body[data-app="dashboard"] .ob-regen-titel i.buch { width: 2px; height: 11px; border-radius: 1px; background: var(--akzent); vertical-align: -1px; }
+body[data-app="dashboard"] .ob-eingang { padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
+body[data-app="dashboard"] .ob-eingang .ob-leiter-kopf { margin-bottom: 2px; }
+body[data-app="dashboard"] .ob-eingang-wert { font-size: var(--t-text); color: var(--ton-3); }
+body[data-app="dashboard"] .ob-eingang-wert b { font-size: var(--t-zahl); font-weight: 600; color: var(--ton-1); margin-right: 4px; }
+body[data-app="dashboard"] .ob-eingang-neben { font-size: var(--t-klein); color: var(--ton-3); }
+body[data-app="dashboard"] .ob-eingang-neben b { font-weight: 600; } body[data-app="dashboard"] .ob-eingang-neben b.kauf { color: var(--gut-text); margin-left: 4px; }
+body[data-app="dashboard"] .ob-eingang-neben b.verkauf { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-eingang canvas { display: block; margin: 4px 0 3px; }
+@media (min-width: 1101px) {
+  body[data-app="dashboard"] .ob-strom > .rahmen { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom-color: transparent; box-shadow: none; }
+  body[data-app="dashboard"] .ob-strom:not([hidden]) + .ob-haupt > .rahmen { border-top-left-radius: 0; border-top-right-radius: 0; border-top-color: transparent; background: var(--karte); }
+}
+@media (max-width: 1100px) { body[data-app="dashboard"] .ob-strom { margin-bottom: 12px; } }
+body[data-app="dashboard"] .ob-puls { display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; vertical-align: 1px; background: var(--gut); animation: ob-puls 1.6s ease-out infinite; }
+@keyframes ob-puls { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--gut) 60%, transparent); } 70%, 100% { box-shadow: 0 0 0 7px transparent; } }
+body[data-app="dashboard"] .ob-puls.xetra { background: var(--akzent); animation-name: ob-puls-blau; }
+@keyframes ob-puls-blau { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--akzent) 60%, transparent); } 70%, 100% { box-shadow: 0 0 0 7px transparent; } }
+body[data-app="dashboard"] .ob-mitte b { color: var(--ton-1); font-weight: 600; margin-right: 10px; }
+
+/* Bilanz der Signale */
+body[data-app="dashboard"] .ob-bilanz { overflow: hidden; }
+body[data-app="dashboard"] .ob-tabelle { width: 100%; border-collapse: collapse; }
+body[data-app="dashboard"] .ob-tabelle th, body[data-app="dashboard"] .ob-tabelle td { padding: 10px 10px; border-bottom: 1px solid var(--linie); text-align: left; white-space: nowrap; }
+body[data-app="dashboard"] .ob-tabelle :is(th, td):first-child { padding-left: 16px; } body[data-app="dashboard"] .ob-tabelle :is(th, td):last-child { padding-right: 16px; }
+body[data-app="dashboard"] .ob-tabelle :is(th, td).zahl { text-align: right; }
+body[data-app="dashboard"] .ob-tabelle td b { font-weight: 600; }
+body[data-app="dashboard"] .ob-tabelle td.gewinn { color: var(--gut-text); } body[data-app="dashboard"] .ob-tabelle td.verlust { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-bz { cursor: pointer; } body[data-app="dashboard"] .ob-bz:hover { background: color-mix(in srgb, var(--akzent) 6%, transparent); }
+body[data-app="dashboard"] .ob-bz-frage { display: inline-grid; place-items: center; width: 16px; height: 16px; margin-left: 7px; border-radius: 50%; font-size: 10px; font-weight: 600; color: var(--akzent); background: var(--akzent-weich); }
+body[data-app="dashboard"] .ob-bz-erkl td { white-space: normal; font-size: var(--t-text); line-height: 1.55; color: var(--ton-2); background: var(--karte-tief); padding: 10px 16px 12px; }
+body[data-app="dashboard"] .ob-bilanz-fuss { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; padding: 10px 16px; font-size: var(--t-klein); color: var(--ton-3); }
+@media (max-width: 1100px) { body[data-app="dashboard"] .ob-lage { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { body[data-app="dashboard"] .ob-tabelle th:nth-child(5), body[data-app="dashboard"] .ob-tabelle td:nth-child(5), body[data-app="dashboard"] .ob-tabelle th:nth-child(7), body[data-app="dashboard"] .ob-tabelle td:nth-child(7) { display: none; }
+  body[data-app="dashboard"] .ob-bz-erkl td { display: table-cell; }
+  body[data-app="dashboard"] .ob-sig-meta { display: none; } body[data-app="dashboard"] #orderbuch .rubrik > .rechts { display: none; } body[data-app="dashboard"] .ob-lage-karte { padding: 14px 14px 12px; } }
+
+/* ============================================================================================
+   8b Orderbuch im Analysen-Stil (21.10.2026): Kennzahlen in der Kopfleiste, Kasten wie das Morgenbriefing,
+      Signal-Lage im Kasten, rechte Spalten schließen unten mit den linken ab
+   ============================================================================================ */
+body[data-app="dashboard"] .ob-regime { display: inline-block; width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%; margin-right: 1px; background: var(--ton-3); }
+body[data-app="dashboard"] .ob-regime.ruhig { background: var(--akzent); }
+body[data-app="dashboard"] .ob-regime.aktiv { background: var(--warnung, #fab219); }
+body[data-app="dashboard"] .ob-regime.stress { background: var(--kritisch); }
+body[data-app="dashboard"] #ob-chips .chip { cursor: default; flex-wrap: nowrap; flex-shrink: 0; row-gap: 0; display: inline-grid; grid-template-columns: auto auto; align-items: baseline; }
+body[data-app="dashboard"] #ob-chips .chip .beschriftung { grid-column: 1 / -1; }
+body[data-app="dashboard"] #ob-chips .chip small { white-space: nowrap; }
+body[data-app="dashboard"] #ob-chips .chip[title] { cursor: help; }
+
+body[data-app="dashboard"] .ob-kopf { align-items: baseline; }
+body[data-app="dashboard"] .ob-kopf h2 small { margin-left: 10px; font-size: var(--t-klein); font-weight: 400; letter-spacing: 0; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-werte { display: inline-flex; flex-wrap: wrap; gap: 2px; margin-top: 14px; padding: 3px; border-radius: var(--radius-m); background: var(--karte-tief); border: 1px solid var(--linie); }
+body[data-app="dashboard"] .ob-wert { gap: 7px; padding: 4px 11px 4px 5px; border: 0; border-radius: var(--radius-s); background: none; font-size: var(--t-text); }
+body[data-app="dashboard"] .ob-wert .logo { width: 20px; height: 20px; font-size: 6.5px; }
+body[data-app="dashboard"] .ob-wert:hover { background: color-mix(in srgb, var(--ton-1) 5%, transparent); }
+body[data-app="dashboard"] .ob-wert[aria-pressed="true"] { color: var(--ton-1); font-weight: 600; background: var(--karte); box-shadow: 0 1px 3px rgb(0 0 0 / .25), inset 0 0 0 1px var(--linie); }
+
+body[data-app="dashboard"] .ob-claude { display: block; margin-top: 16px; }
+body[data-app="dashboard"] .ob-claude-text { margin: 0; max-width: 92ch; font-size: var(--t-lese); font-weight: 600; line-height: 1.55; color: var(--ton-1); }
+body[data-app="dashboard"] .ob-claude-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px; font-size: var(--t-klein); color: var(--ton-3); }
+body[data-app="dashboard"] .ob-claude .leise { margin-left: 0; }
+
+body[data-app="dashboard"] .ob-hinweis { flex-direction: row; align-items: center; gap: 10px; margin-top: 12px; padding: 0; border: 0; background: none; font-size: var(--t-klein); color: var(--ton-3); }
+body[data-app="dashboard"] .ob-hinweis[hidden] { display: none; }
+body[data-app="dashboard"] .ob-hinweis i { width: 6px; height: 6px; box-shadow: none; }
+
+body[data-app="dashboard"] .ob-label { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 20px 0 0; padding-bottom: 10px; border-bottom: 1px solid var(--linie);
+  font-size: var(--t-mikro); text-transform: uppercase; letter-spacing: .08em; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-label small { font-size: var(--t-klein); text-transform: none; letter-spacing: 0; }
+
+/* Signal-Lage im Kasten: links Richtung und Stärke, rechts die aktiven Signale, getrennt durch eine Linie */
+body[data-app="dashboard"] .ob-lage { grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 0; }
+body[data-app="dashboard"] .ob-lage-leer { padding: 22px 0 4px; text-align: left; }
+body[data-app="dashboard"] .ob-lage-karte, body[data-app="dashboard"] .ob-lage-karte.kauf, body[data-app="dashboard"] .ob-lage-karte.verkauf {
+  display: block; padding: 16px 24px 0 0; text-align: left; background: none; border-right: 1px solid var(--linie); overflow: visible; }
+body[data-app="dashboard"] .ob-lage-zeile { display: flex; align-items: baseline; gap: 12px; }
+body[data-app="dashboard"] .ob-lage-score { font-size: var(--t-gross); font-weight: 700; line-height: 1.1; }
+body[data-app="dashboard"] .ob-lage-stufe { margin: 0; font-size: var(--t-klein); letter-spacing: 0; text-transform: none; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-lage-stufe b { margin-right: 6px; font-size: var(--t-mikro); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ton-2); }
+body[data-app="dashboard"] .ob-lage-karte.setup .ob-lage-stufe b { color: var(--akzent); }
+body[data-app="dashboard"] .ob-meter { position: relative; height: 6px; margin-top: 12px; border-radius: 3px; background: var(--karte-tief); }
+body[data-app="dashboard"] .ob-meter::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--linie-stark); }
+body[data-app="dashboard"] .ob-meter i { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: var(--ton-3); }
+body[data-app="dashboard"] .ob-meter.kauf i { background: var(--gut); } body[data-app="dashboard"] .ob-meter.verkauf i { background: var(--kritisch); }
+body[data-app="dashboard"] .ob-meter-achse { display: flex; justify-content: space-between; margin-top: 5px; font-size: var(--t-mikro); letter-spacing: .06em; text-transform: uppercase; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-lage-text { max-width: none; margin: 12px 0 0; font-size: var(--t-text); color: var(--ton-2); }
+body[data-app="dashboard"] .ob-bausteine { justify-content: flex-start; margin-top: 10px; }
+body[data-app="dashboard"] .ob-ort { margin-top: 12px; padding: 10px 0 0; }
+body[data-app="dashboard"] .ob-signale { padding: 6px 0 0 24px; background: none; border: 0; box-shadow: none; }
+body[data-app="dashboard"] .ob-signale-kopf { align-items: center; padding: 10px 0 8px; font-size: var(--t-ui); }
+body[data-app="dashboard"] .ob-signale .ob-leer { padding: 10px 0; text-align: left; }
+body[data-app="dashboard"] .ob-signal { padding: 10px 0 10px 14px; }
+body[data-app="dashboard"] .ob-signal::before { top: 12px; bottom: 12px; border-radius: 2px; }
+body[data-app="dashboard"] .ob-signal:hover { background: none; }
+body[data-app="dashboard"] .ob-signal:hover b { color: var(--akzent); }
+@media (max-width: 1100px) {
+  body[data-app="dashboard"] .ob-lage { grid-template-columns: 1fr; }
+  body[data-app="dashboard"] .ob-lage-karte, body[data-app="dashboard"] .ob-lage-karte.kauf, body[data-app="dashboard"] .ob-lage-karte.verkauf { padding-right: 0; padding-bottom: 14px; border-right: 0; border-bottom: 1px solid var(--linie); }
+  body[data-app="dashboard"] .ob-signale { padding-left: 0; } }
+
+/* rechte Kästen so hoch wie die linken */
+body[data-app="dashboard"] .ob-flow-legende { align-self: stretch; }
+body[data-app="dashboard"] .ob-unten { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+body[data-app="dashboard"] .ob-unten > div { display: flex; flex-direction: column; min-width: 0; }
+body[data-app="dashboard"] .ob-unten > div > .rahmen { flex: 1; display: flex; flex-direction: column; }
+body[data-app="dashboard"] .ob-ereignisse .mehr-knopf { margin-top: auto; }
+body[data-app="dashboard"] .ob-ereignis:last-of-type { border-bottom: 0; }
+body[data-app="dashboard"] .ob-ereignisse:has(.mehr-knopf) .ob-ereignis:last-of-type { border-bottom: 1px solid var(--linie); }
+
+/* Bilanz: Tabelle wie die übrigen Tabellen, passt in die halbe Breite */
+body[data-app="dashboard"] .ob-tabelle th { padding-top: 12px; padding-bottom: 10px; font-size: var(--t-mikro); font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-tabelle th, body[data-app="dashboard"] .ob-tabelle td { padding-left: 7px; padding-right: 7px; }
+body[data-app="dashboard"] .ob-tabelle td { padding-top: 11px; padding-bottom: 11px; font-size: var(--t-text); }
+body[data-app="dashboard"] .ob-tabelle td:first-child { white-space: normal; }
+body[data-app="dashboard"] .ob-tabelle th.gruppe { padding-bottom: 0; border-bottom: 0; text-align: center; }
+body[data-app="dashboard"] .ob-tabelle tr.gruppen th { padding-top: 12px; }
+body[data-app="dashboard"] .ob-tabelle tr.gruppen + tr th { padding-top: 4px; }
+body[data-app="dashboard"] .ob-tabelle th.trenner, body[data-app="dashboard"] .ob-tabelle td.trenner { border-left: 1px solid var(--linie); }
+body[data-app="dashboard"] .ob-tabelle tbody tr:last-child td { border-bottom: 0; }
+body[data-app="dashboard"] .ob-bilanz-fuss { margin-top: auto; border-top: 1px solid var(--linie); }
+
+/* ============================================================================================
+   9  Großer Bildschirm: ab 1680 px wachsen Inhaltsbreite und alle Schriftstufen stufenweise mit
+      (--skala). iC Charts bleibt unverändert, Zeichenflächen passen sich über ihre Breite an.
+   ============================================================================================ */
+body[data-app]:not([data-app="charts"]) { --skala: 1;
+  --t-mikro: calc(10.5px * var(--skala)); --t-klein: calc(11.5px * var(--skala)); --t-text: calc(12.5px * var(--skala)); --t-ui: calc(13px * var(--skala));
+  --t-lese: calc(13.5px * var(--skala)); --t-titel: calc(16px * var(--skala)); --t-zahl: calc(19px * var(--skala)); --t-gross: calc(24px * var(--skala));
+  --t-lauf: var(--t-lese); --t-kopf: var(--t-titel); --t-wert: var(--t-zahl); }
+@media (min-width: 1680px) {
+  body[data-app]:not([data-app="charts"]) { --skala: 1.08; font-size: var(--t-ui); }
+  body[data-app="dashboard"] main:not(.voll), body[data-app="analysen"] main, body[data-app="einrichtung"] main { max-width: clamp(1280px, 100vw - 300px, calc(1600px * var(--skala))); }
+  body[data-app="dashboard"] .ob-haupt { grid-template-columns: minmax(0, 1fr) calc(330px * var(--skala)); }
+  body[data-app="dashboard"] .ob-lage { grid-template-columns: minmax(280px, calc(380px * var(--skala))) minmax(0, 1fr); }
+}
+@media (min-width: 2000px) { body[data-app]:not([data-app="charts"]) { --skala: 1.16; } }
+@media (min-width: 2400px) { body[data-app]:not([data-app="charts"]) { --skala: 1.26; } }
+@media (min-width: 2900px) { body[data-app]:not([data-app="charts"]) { --skala: 1.38; } }
+@media (min-width: 3300px) { body[data-app]:not([data-app="charts"]) { --skala: 1.5; } }
+
+/* ============================================================================================
+   8c Orderbuch oben: Fazit, Zeithorizont, vier Fragen an das Buch, Claudes Einordnung darunter
+   ============================================================================================ */
+body[data-app="dashboard"] .ob-lage { display: block; }
+body[data-app="dashboard"] .ob-fazit { margin: 18px 0 0; max-width: 110ch; font-size: var(--t-lese); font-weight: 600; line-height: 1.55; color: var(--ton-1); }
+body[data-app="dashboard"] .ob-horizont { margin: 6px 0 0; max-width: 130ch; font-size: var(--t-klein); line-height: 1.5; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-horizont a { color: var(--akzent); text-decoration: none; }
+body[data-app="dashboard"] .ob-horizont a:hover { text-decoration: underline; }
+body[data-app="dashboard"] .ob-fragen { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+body[data-app="dashboard"] .ob-frage { padding: 14px 20px 2px; border-left: 1px solid var(--linie); }
+body[data-app="dashboard"] .ob-frage:first-child { padding-left: 0; border-left: 0; }
+body[data-app="dashboard"] .ob-frage:last-child { padding-right: 0; }
+body[data-app="dashboard"] .ob-frage small { display: block; font-size: var(--t-mikro); letter-spacing: .08em; text-transform: uppercase; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-frage b { display: block; margin: 7px 0 6px; font-size: var(--t-titel); font-weight: 600; letter-spacing: -.01em; color: var(--ton-1); }
+body[data-app="dashboard"] .ob-frage.gut b { color: var(--gut-text); } body[data-app="dashboard"] .ob-frage.schlecht b { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-frage p { margin: 0; font-size: var(--t-text); line-height: 1.5; color: var(--ton-2); }
+body[data-app="dashboard"] .ob-frage[title] b { cursor: help; }
+body[data-app="dashboard"] .ob-claude { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--linie); }
+body[data-app="dashboard"] .ob-claude-meta { margin-top: 0; }
+body[data-app="dashboard"] .ob-claude-text { margin: 6px 0 0; font-weight: 400; font-size: var(--t-text); color: var(--ton-2); }
+body[data-app="dashboard"] #ob-alarm-platz .leise { margin-right: 12px; }
+@media (max-width: 1100px) {
+  body[data-app="dashboard"] .ob-fragen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body[data-app="dashboard"] .ob-frage:nth-child(3) { padding-left: 0; border-left: 0; }
+  body[data-app="dashboard"] .ob-frage:nth-child(n+3) { margin-top: 10px; border-top: 1px solid var(--linie); } }
+@media (max-width: 640px) {
+  body[data-app="dashboard"] .ob-fragen { grid-template-columns: 1fr; }
+  body[data-app="dashboard"] .ob-frage { padding-left: 0; padding-right: 0; border-left: 0; }
+  body[data-app="dashboard"] .ob-frage + .ob-frage { margin-top: 10px; border-top: 1px solid var(--linie); } }
+
+/* 8d Orderbuch oben, zweite Runde: Momentum links, Fazit daneben, Kacheln mit Zahlen */
+body[data-app="dashboard"] .ob-kopfzeile { display: grid; grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); gap: 28px; align-items: center; margin-top: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--linie); }
+body[data-app="dashboard"] .ob-momentum small { display: block; font-size: var(--t-mikro); letter-spacing: .08em; text-transform: uppercase; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-momentum b { display: block; margin-top: 4px; font-size: var(--t-gross); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; color: var(--ton-1); }
+body[data-app="dashboard"] .ob-momentum.gut b { color: var(--gut-text); } body[data-app="dashboard"] .ob-momentum.schlecht b { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-momentum .ob-meter { margin-top: 10px; }
+body[data-app="dashboard"] .ob-kopfzeile .ob-fazit { margin: 0; padding-left: 28px; border-left: 1px solid var(--linie); }
+body[data-app="dashboard"] .ob-fazit mark { padding: 1px 7px; border-radius: 6px; background: var(--karte-tief); color: var(--ton-1); }
+body[data-app="dashboard"] .ob-fazit mark.gut { color: var(--gut-text); background: var(--gut-weich); }
+body[data-app="dashboard"] .ob-fazit mark.schlecht { color: var(--kritisch-text); background: var(--kritisch-weich); }
+body[data-app="dashboard"] .ob-frage { padding-top: 16px; }
+body[data-app="dashboard"] .ob-frage b { margin: 6px 0 8px; font-size: var(--t-zahl); font-weight: 700; }
+body[data-app="dashboard"] .ob-fakten { display: flex; flex-direction: column; gap: 3px; font-size: var(--t-klein); color: var(--ton-3); }
+body[data-app="dashboard"] .ob-fakten span { display: flex; justify-content: space-between; gap: 10px; }
+body[data-app="dashboard"] .ob-fakten em { font-style: normal; font-weight: 600; color: var(--ton-1); font-variant-numeric: tabular-nums; text-align: right; }
+body[data-app="dashboard"] .ob-fakten em.gut { color: var(--gut-text); } body[data-app="dashboard"] .ob-fakten em.schlecht { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-frage p { margin-top: 9px; color: var(--ton-1); font-weight: 500; }
+@media (max-width: 900px) { body[data-app="dashboard"] .ob-kopfzeile { grid-template-columns: 1fr; gap: 12px; } body[data-app="dashboard"] .ob-kopfzeile .ob-fazit { padding-left: 0; border-left: 0; } }
+
+/* 8e Orderbuch oben, Design: Momentum-Skala als Blickfang, vier Karten wie die Beweger-Karten mit kleiner Grafik */
+body[data-app="dashboard"] .ob-held { display: grid; grid-template-columns: minmax(180px, 230px) minmax(0, 1fr); column-gap: 32px; row-gap: 12px; align-items: end; margin-top: 22px; }
+body[data-app="dashboard"] .ob-held .ob-momentum b { margin-top: 2px; font-size: calc(30px * var(--skala, 1)); font-weight: 700; letter-spacing: -.025em; line-height: 1.1; }
+body[data-app="dashboard"] .ob-mskala { padding-bottom: 2px; }
+body[data-app="dashboard"] .ob-mskala-spur { position: relative; height: 10px; border-radius: 5px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--kritisch) 55%, transparent), color-mix(in srgb, var(--kritisch) 12%, transparent) 38%, var(--karte-tief) 50%, color-mix(in srgb, var(--gut) 12%, transparent) 62%, color-mix(in srgb, var(--gut) 55%, transparent)); }
+body[data-app="dashboard"] .ob-mskala-spur::after { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px; background: var(--linie-stark); }
+body[data-app="dashboard"] .ob-mskala-punkt { position: absolute; top: 50%; z-index: 1; width: 20px; height: 20px; border-radius: 50%; transform: translate(-50%, -50%);
+  background: var(--ton-1); border: 4px solid var(--karte); box-shadow: 0 0 0 1px var(--linie-stark), 0 2px 8px rgb(0 0 0 / .35); }
+body[data-app="dashboard"] .ob-mskala-punkt.gut { background: var(--gut); } body[data-app="dashboard"] .ob-mskala-punkt.schlecht { background: var(--kritisch); }
+body[data-app="dashboard"] .ob-mskala-achse { display: flex; justify-content: space-between; margin-top: 8px; font-size: var(--t-mikro); letter-spacing: .08em; text-transform: uppercase; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-held .ob-fazit { grid-column: 1 / -1; margin: 6px 0 0; padding: 0; border: 0; font-size: var(--t-lese); font-weight: 500; color: var(--ton-2); max-width: none; }
+body[data-app="dashboard"] .ob-held .ob-fazit mark { font-weight: 600; }
+
+body[data-app="dashboard"] .ob-karten { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+body[data-app="dashboard"] .ob-karte { display: flex; flex-direction: column; min-width: 0; padding: 14px 16px 14px; border-radius: var(--radius-m); background: var(--karte-tief); border: 1px solid var(--linie); }
+body[data-app="dashboard"] .ob-karte[title] { cursor: help; }
+body[data-app="dashboard"] .ob-karte-kopf { font-size: var(--t-mikro); letter-spacing: .08em; text-transform: uppercase; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-karte-wert { margin-top: 8px; font-size: var(--t-zahl); font-weight: 700; letter-spacing: -.015em; line-height: 1.2; color: var(--ton-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body[data-app="dashboard"] .ob-karte-wert small { margin-left: 4px; font-size: var(--t-klein); font-weight: 500; letter-spacing: 0; color: var(--ton-3); }
+body[data-app="dashboard"] .ob-karte.gut .ob-karte-wert { color: var(--gut-text); } body[data-app="dashboard"] .ob-karte.schlecht .ob-karte-wert { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-karte-grafik { margin-top: 14px; min-height: 34px; }
+body[data-app="dashboard"] .ob-karte-fakten { display: flex; flex-wrap: wrap; gap: 2px 8px; margin-top: 12px; font-size: var(--t-klein); color: var(--ton-3); }
+body[data-app="dashboard"] .ob-karte-fakten > i { font-style: normal; color: var(--linie-stark); }
+body[data-app="dashboard"] .ob-karte-fakten b { font-weight: 600; color: var(--ton-1); font-variant-numeric: tabular-nums; }
+body[data-app="dashboard"] .ob-karte-fakten b.gut { color: var(--gut-text); } body[data-app="dashboard"] .ob-karte-fakten b.schlecht { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-karte-satz { margin: auto 0 0; padding-top: 12px; font-size: var(--t-text); line-height: 1.45; color: var(--ton-1); }
+
+/* Grafiken in den Karten */
+body[data-app="dashboard"] :is(.ob-waage, .ob-treffer) { position: relative; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ton-1) 8%, transparent); }
+body[data-app="dashboard"] .ob-waage::after { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px; background: var(--linie-stark); }
+body[data-app="dashboard"] .ob-waage i { position: absolute; top: 0; bottom: 0; border-radius: 4px; background: var(--ton-3); }
+body[data-app="dashboard"] .ob-waage.kauf i { background: var(--gut); } body[data-app="dashboard"] .ob-waage.verkauf i { background: var(--kritisch); }
+body[data-app="dashboard"] .ob-treffer i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--akzent); }
+body[data-app="dashboard"] .ob-karte.gut .ob-treffer i { background: var(--gut); }
+body[data-app="dashboard"] .ob-treffer .zufall { position: absolute; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--ton-1); opacity: .7; }
+body[data-app="dashboard"] .ob-waage-achse { display: flex; justify-content: space-between; align-items: center; margin-top: 7px; font-size: var(--t-mikro); color: var(--ton-3); }
+body[data-app="dashboard"] .ob-punkte { display: inline-flex; gap: 4px; }
+body[data-app="dashboard"] .ob-punkte i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--linie-stark); }
+body[data-app="dashboard"] .ob-karte.gut .ob-punkte i.an { background: var(--gut); border-color: var(--gut); }
+body[data-app="dashboard"] .ob-karte.schlecht .ob-punkte i.an { background: var(--kritisch); border-color: var(--kritisch); }
+body[data-app="dashboard"] .ob-punkte i.an { background: var(--akzent); border-color: var(--akzent); }
+
+body[data-app="dashboard"] .ob-skala { position: relative; height: 34px; }
+body[data-app="dashboard"] .ob-skala::before { content: ""; position: absolute; left: 0; right: 0; top: 7px; height: 2px; border-radius: 1px; background: var(--linie-stark); }
+body[data-app="dashboard"] .ob-skala .buch { position: absolute; top: 2px; height: 12px; border-radius: 6px; background: color-mix(in srgb, var(--akzent) 22%, transparent); }
+body[data-app="dashboard"] .ob-skala .zone { position: absolute; top: 4px; height: 8px; border-radius: 2px; opacity: .55; }
+body[data-app="dashboard"] .ob-skala .zone.kauf { background: var(--gut); } body[data-app="dashboard"] .ob-skala .zone.verkauf { background: var(--kritisch); }
+body[data-app="dashboard"] .ob-marke { position: absolute; top: 0; width: 2px; height: 16px; margin-left: -1px; border-radius: 1px; }
+body[data-app="dashboard"] .ob-marke.kauf { background: var(--gut); } body[data-app="dashboard"] .ob-marke.verkauf { background: var(--kritisch); }
+body[data-app="dashboard"] .ob-marke em { position: absolute; top: 19px; left: 50%; transform: translateX(-50%); font-style: normal; font-size: var(--t-mikro); font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+body[data-app="dashboard"] .ob-marke.kauf em { color: var(--gut-text); } body[data-app="dashboard"] .ob-marke.verkauf em { color: var(--kritisch-text); }
+body[data-app="dashboard"] .ob-marke.links em { transform: translateX(-3px); }
+body[data-app="dashboard"] .ob-marke.rechts em { transform: translateX(calc(-100% + 3px)); }
+body[data-app="dashboard"] .ob-jetzt { position: absolute; top: 8px; z-index: 1; width: 12px; height: 12px; border-radius: 50%; transform: translate(-50%, -50%); background: var(--ton-1); border: 3px solid var(--karte-tief); box-shadow: 0 0 0 1px var(--linie-stark); }
+
+body[data-app="dashboard"] .ob-vergleich { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px 10px; align-items: center; font-size: var(--t-mikro); color: var(--ton-3); }
+body[data-app="dashboard"] .ob-vergleich > div { height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ton-1) 8%, transparent); }
+body[data-app="dashboard"] .ob-vergleich i { display: block; height: 100%; border-radius: 4px; }
+body[data-app="dashboard"] .ob-vergleich i.kosten { background: var(--ton-3); } body[data-app="dashboard"] .ob-vergleich i.bewegung { background: var(--akzent); }
+body[data-app="dashboard"] .ob-vergleich b { font-weight: 600; color: var(--ton-1); text-align: right; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 1100px) { body[data-app="dashboard"] .ob-karten { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { body[data-app="dashboard"] .ob-karten, body[data-app="dashboard"] .ob-held { grid-template-columns: 1fr; } }
