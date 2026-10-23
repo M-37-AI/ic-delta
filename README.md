@@ -172,4 +172,6 @@ erfolgt auf eigenes Risiko.
 ## Lizenz
 
 MIT für den Code, siehe [LICENSE](LICENSE). Keine Gewähr, keine Anlageberatung.
+Die Lizenz gilt nur für den Code. Marktdaten, die mit diesem Code abgerufen werden,
+unterliegen den Bedingungen der jeweiligen Quelle (siehe Tabelle oben).
 Fremde Bestandteile (Lightweight Charts, Apache 2.0) und Entwicklungswerkzeuge: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
