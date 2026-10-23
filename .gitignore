@@ -5,6 +5,8 @@
 
 # Marktdaten gehören nie ins Repo
 daten/
+# Ausnahme: erfundene Testkerzen, keine Marktdaten
+!tests/daten/
 data/
 *.parquet
 *.json.gz
