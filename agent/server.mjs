@@ -25,7 +25,7 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { WebSocketServer } from 'ws';
 import { query, tool, createSdkMcpServer } from '@anthropic-ai/claude-agent-sdk';
-import { WERKZEUGE, BEZEICHNUNG, analysen, dashboard, wertFinden, heute } from './werkzeuge.mjs';
+import { WERKZEUGE, BEZEICHNUNG, WERKSTATT_ANLEITUNG, analysen, dashboard, wertFinden, heute } from './werkzeuge.mjs';
 import { openrouterLauf, openrouterSchluessel } from './treiber-openrouter.mjs';
 import * as Pruefstand from './pruefstand.mjs';
 
@@ -74,9 +74,7 @@ Arbeitsweise:
 - Ehrlich bleiben: sag, was die Daten tragen und was nicht (ein Tag ist keine Statistik, 15 Minuten Verzögerung, dünnes Buch abends, Formationen sind Ermessenssache). Wenn etwas fehlt, sag warum (Sammler lief nicht, Wert nicht auf der Watchlist).
 - Nennst du eine Richtung für einen Zeitraum, trag sie mit note_expectation ein und erwähne das in einem Halbsatz. Deine Trefferquote steht in get_scorecard; nenn sie, wenn Niko nach deiner Verlässlichkeit fragt.
 
-Werkstatt: Für Auswertungen, die es im Reiter Analysen nicht gibt, schreibst du Python gegen die Rohdaten: erst get_workshop_reference lesen, dann run_analysis; bei einem Fehler korrigieren und mit derselben id erneut laufen lassen; danach das Ergebnis in zwei Sätzen deuten. Kurzer, lesbarer Code mit deutschen Kommentaren, jede Karte mit einem \`text\`, der die Grenzen nennt. pin_analysis nur, wenn Niko es sagt.
-
-Strategien: Beschreibt Niko eine Handelsstrategie, die getestet werden soll, übersetze sie für das Ideen-Labor: mit strategy_check im Lernteil auf Fehler prüfen (den gesperrten Prüfteil sieht vorher niemand), dann mit strategy_save als Entwurf speichern und sagen, dass er ihn unter Analysen → Ideen-Labor prüfen kann. strategy_run (Prüfteil öffnen, einmalig) nur, wenn Niko das ausdrücklich will. Ergebnisse ehrlich einordnen: Median-Vorsprung gegen Kaufen und Halten, Zahl der Trades, Zahl der Versuche.
+${WERKSTATT_ANLEITUNG}Strategien: Beschreibt Niko eine Handelsstrategie, die getestet werden soll, übersetze sie für das Ideen-Labor: mit strategy_check im Lernteil auf Fehler prüfen (den gesperrten Prüfteil sieht vorher niemand), dann mit strategy_save als Entwurf speichern und sagen, dass er ihn unter Analysen → Ideen-Labor prüfen kann. strategy_run (Prüfteil öffnen, einmalig) nur, wenn Niko das ausdrücklich will. Ergebnisse ehrlich einordnen: Median-Vorsprung gegen Kaufen und Halten, Zahl der Trades, Zahl der Versuche.
 
 Alarme: Alarme, die per Telegram kommen sollen, immer mit create_alert anlegen (add_alarm klingelt nur im offenen Browser). Für Linien zuerst detect_patterns, damit die Linie die der Erkennung ist; Richtung passend wählen (Widerstand und Abwärtstrend meist above, Unterstützung und Aufwärtstrend meist below). Alltagssprache in Regeln übersetzen, auch mit Buchbedingungen (kind book: Ungleichgewicht, Spread, Tiefe). Nach dem Anlegen die Bedingung in einem Satz wiederholen. Jeder ausgelöste Alarm bekommt von dir automatisch eine Zweitmeinung per Telegram.
 

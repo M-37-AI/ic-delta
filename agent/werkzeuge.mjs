@@ -7,6 +7,7 @@
  *   chart     – läuft im Browser in iC Charts (agent-panel.js): zeichnen, Indikatoren, Scripts, Replay.
  * Dieselben Definitionen dienen dem Claude Agent SDK (als MCP-Werkzeuge) und OpenRouter (als JSON-Schema).
  */
+import fs from 'node:fs';
 import { z } from 'zod';
 
 const BASIS = +(process.env.MARKTDATEN_PORT || 8812);
@@ -14,6 +15,16 @@ export const ANALYSEN = process.env.ANALYSEN || `http://127.0.0.1:${BASIS + 1}`;
 export const DASHBOARD = process.env.DASHBOARD || `http://127.0.0.1:${BASIS}`;
 const num = (d) => z.number().describe(d);
 const str = (d) => z.string().describe(d);
+
+// Die Werkstatt (Python-Code der KI) läuft nur im macOS-Sandkasten, wie werkstatt.VERFUEGBAR im Analysen-Dienst.
+// Ohne Sandkasten (Windows, Linux) bietet der Agent ihre Werkzeuge gar nicht erst an: sonst hält das Modell die
+// Absage für einen Codefehler, ruft run_analysis immer wieder auf und verbraucht Tokens.
+export const WERKSTATT = process.platform === 'darwin' && fs.existsSync('/usr/bin/sandbox-exec');
+export const WERKSTATT_WERKZEUGE = new Set(['get_workshop_reference', 'run_analysis', 'pin_analysis', 'list_workshop', 'get_analysis_code', 'delete_analysis']);
+const OHNE_SANDKASTEN = /nur auf macOS/;
+const HINWEIS_OHNE_SANDKASTEN = 'Werkstatt auf diesem System nicht verfügbar (nur macOS). Nicht erneut versuchen, die Frage mit den übrigen Werkzeugen beantworten.';
+// Absatz für den Systemprompt (server.mjs), leer ohne Werkstatt
+export const WERKSTATT_ANLEITUNG = WERKSTATT ? 'Werkstatt: Für Auswertungen, die es im Reiter Analysen nicht gibt, schreibst du Python gegen die Rohdaten: erst get_workshop_reference lesen, dann run_analysis; bei einem Fehler korrigieren und mit derselben id erneut laufen lassen; danach das Ergebnis in zwei Sätzen deuten. Kurzer, lesbarer Code mit deutschen Kommentaren, jede Karte mit einem `text`, der die Grenzen nennt. pin_analysis nur, wenn Niko es sagt.\n\n' : '';
 
 // ---------------- HTTP zu den eigenen Diensten ----------------
 async function api(basis, pfad, opts = {}, timeout = 30000) {
@@ -68,7 +79,7 @@ function werkstattKompakt(e) {
   return { id: e.id, titel: e.titel, angepinnt: e.angepinnt, wert: e.wert?.symbol, tag: e.tag, ok: e.ok, dauer_s: e.dauer_s, fehler: e.fehler,
     stdout: e.stdout || undefined, zahlen: a.zahlen, text: a.text, tabellen: (a.tabellen || []).map((t) => ({ titel: t.titel, spalten: t.spalten, zeilen: t.zeilen.slice(0, 40), zeilen_gesamt: t.zeilen.length })),
     reihen: reihen.length ? reihen : undefined, punkte: a.punkte ? a.punkte.map((p) => ({ titel: p.titel, n: p.punkte.length })) : undefined,
-    hinweis: e.ok ? 'Die Karte steht im Reiter Analysen → Werkstatt' + (e.angepinnt ? '.' : ' unter Entwürfe; mit pin_analysis wird sie fester Teil des Reiters.') : 'Fehler im Code: korrigieren und erneut run_analysis aufrufen (id mitgeben, dann wird derselbe Entwurf aktualisiert).' };
+    hinweis: e.ok ? 'Die Karte steht im Reiter Analysen → Werkstatt' + (e.angepinnt ? '.' : ' unter Entwürfe; mit pin_analysis wird sie fester Teil des Reiters.') : OHNE_SANDKASTEN.test(e.fehler || '') ? HINWEIS_OHNE_SANDKASTEN : 'Fehler im Code: korrigieren und erneut run_analysis aufrufen (id mitgeben, dann wird derselbe Entwurf aktualisiert).' };
 }
 
 // ---------------- Chart-Werkzeuge (Ausführung in iC Charts, agent-panel.js) ----------------
@@ -354,7 +365,9 @@ Regeln: punkte = genau die Top 5 aus get_chart_picks in derselben Reihenfolge. m
       const w = await wertFinden(wert);
       if (w.markt !== 'DE') throw new Error('Die Werkstatt rechnet auf Xetra-Rohdaten: nur deutsche Werte.');
       const t = await tagWaehlen(tag);
-      const e = await post('/api/werkstatt/lauf', { titel, code, wert: w.id, tag: t, id, beschreibung, modell: ctx?.modell || '', quelle: ctx?.quelle || 'claude' }, 130000);
+      let e;
+      try { e = await post('/api/werkstatt/lauf', { titel, code, wert: w.id, tag: t, id, beschreibung, modell: ctx?.modell || '', quelle: ctx?.quelle || 'claude' }, 130000); }
+      catch (x) { if (OHNE_SANDKASTEN.test(x.message)) return { ok: false, fehler: x.message, hinweis: HINWEIS_OHNE_SANDKASTEN }; throw x; }   // Rückfall, falls doch angeboten
       if (ctx?.dashboard) { try { await ctx.dashboard('navigate', { tab: 'analysen', section: 'werkstatt', wert: w.id, tag: t }); setTimeout(() => ctx.dashboard('highlight', { title: titel }).catch(() => {}), 1500); } catch (x) { /* Dashboard nicht offen */ } }
       return werkstattKompakt(e);
     } },
@@ -433,7 +446,7 @@ Regeln: punkte = genau die Top 5 aus get_chart_picks in derselben Reihenfolge. m
     } },
 ].map((w) => ({ ...w, wo: 'server' }));
 
-export const WERKZEUGE = [...SERVER, ...DASH, ...CHART];
+export const WERKZEUGE = [...SERVER, ...DASH, ...CHART].filter((w) => WERKSTATT || !WERKSTATT_WERKZEUGE.has(w.name));
 export const WERKZEUG = Object.fromEntries(WERKZEUGE.map((w) => [w.name, w]));
 
 // Kurze deutsche Bezeichnungen für die Anzeige im Panel
