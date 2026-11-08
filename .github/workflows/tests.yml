@@ -37,7 +37,7 @@ jobs:
         run: node tests/js/test_indikatoren.cjs
       - name: Agent-Werkzeuge (JavaScript)
         run: |
-          npm ci --prefix agent --no-audit --no-fund
+          npm ci --prefix agent --no-audit --no-fund --ignore-scripts
           node tests/js/test_werkzeuge.mjs
       - name: Rauchtest Quellen und Analysen-Dienst
         run: |
