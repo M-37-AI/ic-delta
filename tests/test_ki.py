@@ -43,6 +43,16 @@ class Werkstatt(unittest.TestCase):
         self.assertIn("(deny file-write*)", p)
         self.assertIn(str(werkstatt.SRC), p)
 
+    def test_ohne_sandkasten_aus(self):
+        alt, werkstatt.VERFUEGBAR = werkstatt.VERFUEGBAR, False      # wie unter Windows oder Linux
+        try:
+            r = werkstatt.ausfuehren("print('darf nie laufen')", "ZZ0000000011", "2026-10-20")
+        finally:
+            werkstatt.VERFUEGBAR = alt
+        self.assertFalse(r["ok"])
+        self.assertIn("nur auf macOS", r["fehler"])
+        self.assertEqual(r["stdout"], "")
+
     @unittest.skipUnless(platform.system() == "Darwin" and pathlib.Path("/usr/bin/sandbox-exec").exists(), "nur macOS")
     def test_sandkasten_blockt(self):
         tage = lesen.Rohdaten().tage()

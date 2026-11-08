@@ -4,12 +4,14 @@ lassen sich anpinnen. Angepinnte Analysen rechnet der Reiter Analysen wie A bis 
 Sandkasten (macOS sandbox-exec): kein Netz, keine Schreibrechte, lesen nur Quellcode, Python, venv und die
 Marktdaten. Der Rest des Home-Verzeichnisses (Konfiguration, Schlüssel, Dokumente) ist unsichtbar.
 Dazu Zeitlimit, CPU- und Speichergrenze. Der Code wird mit dem Ergebnis gespeichert und angezeigt.
+
+Ohne sandbox-exec (Windows, Linux) bleibt die Werkstatt aus: Der Code stammt von der KI und läuft nie ohne Sandkasten.
 """
 from __future__ import annotations
 
 import json
 import pathlib
-import resource
+import platform
 import subprocess
 import sys
 import threading
@@ -19,6 +21,11 @@ from datetime import datetime, timezone
 
 from . import lesen
 
+try:
+    import resource          # nur Unix, unter Windows fehlt das Modul
+except ImportError:
+    resource = None
+
 ORT = lesen.DATEN / "analysen" / "werkstatt"
 ERGEBNISSE = ORT / "ergebnisse"
 SRC = pathlib.Path(__file__).resolve().parents[2]
@@ -26,6 +33,10 @@ LAEUFER = pathlib.Path(__file__).with_name("werkstatt_lauf.py")
 LAUFZEIT_S = 90
 SPEICHER_BYTES = 3 * 1024 ** 3
 ENTWUERFE_MAX = 25
+SANDBOX_EXEC = pathlib.Path("/usr/bin/sandbox-exec")
+VERFUEGBAR = platform.system() == "Darwin" and SANDBOX_EXEC.exists()
+NICHT_VERFUEGBAR = ("Werkstatt nur auf macOS verfügbar: Der Code läuft dort im Sandkasten (sandbox-exec), "
+                    "den es auf diesem System nicht gibt. Ohne Sandkasten wird nichts ausgeführt.")
 
 REFERENZ = """# Werkstatt: eigene Analysen in Python
 
@@ -109,6 +120,8 @@ def _profil() -> str:
 
 
 def _grenzen() -> None:
+    if resource is None:
+        return
     for art, wert in ((resource.RLIMIT_CPU, LAUFZEIT_S + 30), (resource.RLIMIT_AS, SPEICHER_BYTES)):
         try:
             resource.setrlimit(art, (wert, wert))
@@ -118,10 +131,12 @@ def _grenzen() -> None:
 
 def ausfuehren(code: str, isin: str, tag: str, parameter: dict | None = None) -> dict:
     """Führt Code im Sandkasten aus. Rückgabe: {ok, ausgabe|fehler, stdout, dauer_s}."""
+    if not VERFUEGBAR:
+        return {"ok": False, "fehler": NICHT_VERFUEGBAR, "stdout": "", "dauer_s": 0.0}
     auftrag = json.dumps({"code": code, "isin": isin, "tag": tag, "parameter": parameter or {}}).encode()
     umgebung = {"PATH": "/usr/bin:/bin", "HOME": str(pathlib.Path.home()), "PYTHONPATH": str(SRC), "PYTHONIOENCODING": "utf-8",
                 "LANG": "de_DE.UTF-8", "TZ": "Europe/Berlin", "MARKTDATEN_DATEN": str(lesen.DATEN), "MARKTDATEN_ROH": str(lesen.ROH)}
-    befehl = ["/usr/bin/sandbox-exec", "-p", _profil(), sys.executable, "-I", "-B", str(LAEUFER)]
+    befehl = [str(SANDBOX_EXEC), "-p", _profil(), sys.executable, "-I", "-B", str(LAEUFER)]
     t = time.time()
     try:
         p = subprocess.run(befehl, input=auftrag, capture_output=True, timeout=LAUFZEIT_S, env=umgebung, cwd="/", preexec_fn=_grenzen)
@@ -253,4 +268,5 @@ class Werkstatt:
         kurz = lambda a: {k: a.get(k) for k in ("id", "titel", "beschreibung", "erstellt", "geaendert", "quelle", "modell", "angepinnt")} | \
             {"zuletzt": {k: v for k, v in (a.get("zuletzt") or {}).items() if k != "ergebnis"}}
         return {"angepinnt": [kurz(a) for a in alle if a.get("angepinnt")], "entwuerfe": [kurz(a) for a in alle if not a.get("angepinnt")],
-                "sandkasten": "sandbox-exec: kein Netz, keine Schreibrechte, Home gesperrt", "laufzeit_s": LAUFZEIT_S}
+                "sandkasten": "sandbox-exec: kein Netz, keine Schreibrechte, Home gesperrt" if VERFUEGBAR else NICHT_VERFUEGBAR,
+                "laufzeit_s": LAUFZEIT_S}
