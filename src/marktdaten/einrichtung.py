@@ -207,7 +207,7 @@ def _env_schreiben(pfad: pathlib.Path, setzen: dict[str, str], entfernen: tuple 
     zeilen += [f"{k}={v}" for k, v in setzen.items() if k not in gesetzt]
     pfad.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     fd = os.open(pfad, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-    with os.fdopen(fd, "w") as f:
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
         f.write("\n".join(zeilen).strip("\n") + "\n")
     os.chmod(pfad, 0o600)
 
