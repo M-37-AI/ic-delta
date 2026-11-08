@@ -18,7 +18,7 @@ _lock = threading.Lock()
 
 def _alle() -> dict:
     try:
-        return json.loads(DATEI.read_text())
+        return json.loads(DATEI.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return {}
 
@@ -41,5 +41,5 @@ def einordnen(wert: str, name: str, fakten: dict) -> dict:
         alle = _alle()
         alle[str(wert).upper()] = e
         DATEI.parent.mkdir(parents=True, exist_ok=True)
-        DATEI.write_text(json.dumps(alle, ensure_ascii=False))
+        DATEI.write_text(json.dumps(alle, ensure_ascii=False), encoding="utf-8")
     return e

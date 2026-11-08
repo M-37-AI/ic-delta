@@ -27,7 +27,7 @@ def schluessel() -> dict[str, str]:
     werte = {k: os.environ.get(k, "") for k in namen}
     datei = pathlib.Path(os.environ.get("MARKTDATEN_ALPACA_ENV", "~/.config/marktdaten/alpaca.env")).expanduser()
     if not all(werte.values()) and datei.exists():
-        for z in datei.read_text().splitlines():
+        for z in datei.read_text(encoding="utf-8").splitlines():
             k, _, v = z.partition("=")
             if k.strip() in namen and not werte[k.strip()]:
                 werte[k.strip()] = v.strip()

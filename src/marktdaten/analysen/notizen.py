@@ -46,7 +46,7 @@ def dossier_lesen(wert: str) -> dict:
     if not w:
         raise ValueError("Wert nicht auf der Watchlist")
     p = DOSSIER / f"{w['id']}.md"
-    text = p.read_text() if p.exists() else ""
+    text = p.read_text(encoding="utf-8") if p.exists() else ""
     stand = datetime.fromtimestamp(p.stat().st_mtime, timezone.utc).isoformat(timespec="seconds") if p.exists() else None
     return {"wert": w, "text": text, "stand": stand}
 
@@ -58,7 +58,7 @@ def dossier_schreiben(wert: str, text: str) -> dict:
     DOSSIER.mkdir(parents=True, exist_ok=True)
     text = str(text).strip()[:8000]
     with _lock:
-        (DOSSIER / f"{w['id']}.md").write_text(text + "\n")
+        (DOSSIER / f"{w['id']}.md").write_text(text + "\n", encoding="utf-8")
     return {"ok": True, "wert": w, "zeichen": len(text)}
 
 
@@ -67,7 +67,7 @@ def dossiers() -> list[dict]:
     for w in lesen.watchlist():
         p = DOSSIER / f"{w['id']}.md"
         if p.exists():
-            aus.append({"wert": w, "text": p.read_text(), "stand": datetime.fromtimestamp(p.stat().st_mtime, timezone.utc).isoformat(timespec="seconds")})
+            aus.append({"wert": w, "text": p.read_text(encoding="utf-8"), "stand": datetime.fromtimestamp(p.stat().st_mtime, timezone.utc).isoformat(timespec="seconds")})
     return aus
 
 
@@ -75,12 +75,12 @@ def dossiers() -> list[dict]:
 def _journal_lesen() -> list[dict]:
     if not JOURNAL.exists():
         return []
-    return [json.loads(z) for z in JOURNAL.read_text().splitlines() if z.strip()]
+    return [json.loads(z) for z in JOURNAL.read_text(encoding="utf-8").splitlines() if z.strip()]
 
 
 def _journal_schreiben(eintraege: list[dict]) -> None:
     tmp = JOURNAL.with_suffix(".tmp")
-    tmp.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in eintraege))
+    tmp.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in eintraege), encoding="utf-8")
     tmp.replace(JOURNAL)
 
 
@@ -103,7 +103,7 @@ def journal_eintragen(d: dict) -> dict:
          "begruendung": str(d.get("begruendung", ""))[:400], "modell": str(d.get("modell", ""))[:60], "quelle": str(d.get("quelle", "chat"))[:30],
          "ergebnis": None, "kurs_danach": None, "aenderung_pct": None, "geprueft": None}
     ORT.mkdir(parents=True, exist_ok=True)
-    with _lock, open(JOURNAL, "a") as f:
+    with _lock, open(JOURNAL, "a", encoding="utf-8") as f:
         f.write(json.dumps(e, ensure_ascii=False) + "\n")
     return e
 
@@ -179,7 +179,7 @@ def notiz_schreiben(art: str, text: str, modell: str = "", wert: str | None = No
     if (f := _fokus_pruefen(fokus)):
         e["fokus"] = f
     ORT.mkdir(parents=True, exist_ok=True)
-    with _lock, open(NOTIZEN, "a") as f:
+    with _lock, open(NOTIZEN, "a", encoding="utf-8") as f:
         f.write(json.dumps(e, ensure_ascii=False) + "\n")
     return e
 
@@ -187,7 +187,7 @@ def notiz_schreiben(art: str, text: str, modell: str = "", wert: str | None = No
 def notizen_lesen(n: int = 10, art: str | None = None) -> list[dict]:
     if not NOTIZEN.exists():
         return []
-    aus = [json.loads(z) for z in NOTIZEN.read_text().splitlines() if z.strip()]
+    aus = [json.loads(z) for z in NOTIZEN.read_text(encoding="utf-8").splitlines() if z.strip()]
     if art:
         aus = [e for e in aus if e["art"] == art]
     return aus[-n:][::-1]
@@ -196,7 +196,7 @@ def notizen_lesen(n: int = 10, art: str | None = None) -> list[dict]:
 # --- KI-Einstellungen --------------------------------------------------------------------------------
 def ki_lesen() -> dict:
     try:
-        return {**STANDARD_KI, **json.loads(KI.read_text())}
+        return {**STANDARD_KI, **json.loads(KI.read_text(encoding="utf-8"))}
     except (OSError, ValueError):
         return dict(STANDARD_KI)
 
@@ -208,5 +208,5 @@ def ki_schreiben(d: dict) -> dict:
             neu[k] = v if not isinstance(v, str) else v[:80]
     ORT.mkdir(parents=True, exist_ok=True)
     with _lock:
-        KI.write_text(json.dumps(neu, ensure_ascii=False, indent=1))
+        KI.write_text(json.dumps(neu, ensure_ascii=False, indent=1), encoding="utf-8")
     return neu

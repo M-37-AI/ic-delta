@@ -175,14 +175,14 @@ def rechnen() -> dict:
                ereignisse=[{k_: v for k_, v in e.items()} for e in sorted(alle, key=lambda e: -e["t"])])
     ORT.mkdir(parents=True, exist_ok=True)
     tmp = DATEI.with_suffix(".tmp")
-    tmp.write_text(json.dumps(erg, ensure_ascii=False))
+    tmp.write_text(json.dumps(erg, ensure_ascii=False), encoding="utf-8")
     tmp.replace(DATEI)
     return erg
 
 
 def lesen_ergebnis(mit_ereignissen: bool = True) -> dict | None:
     try:
-        d = json.loads(DATEI.read_text())
+        d = json.loads(DATEI.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return None
     if not mit_ereignissen:

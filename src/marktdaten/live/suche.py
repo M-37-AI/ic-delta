@@ -33,12 +33,12 @@ def _laden(name: str, holer) -> list[dict]:
             return _cache[name]
         d = _datei(name)
         if d.exists():
-            _cache[name] = json.loads(d.read_text())
+            _cache[name] = json.loads(d.read_text(encoding="utf-8"))
         else:
             for alt in ORT.glob(f"liste-{name}-*.json"):
                 alt.unlink()                                    # Listen von gestern verwerfen
             _cache[name] = holer()
-            d.write_text(json.dumps(_cache[name]))
+            d.write_text(json.dumps(_cache[name]), encoding="utf-8")
         return _cache[name]
 
 

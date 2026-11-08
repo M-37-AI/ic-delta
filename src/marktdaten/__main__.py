@@ -79,7 +79,7 @@ def synth_schreiben(a):
     pre, post = synth.cboe(start, a.minuten)
     for art, zeilen in (("pretrade", pre), ("trade", post)):
         p = ziel / f"SYNTH-eqt_{art}_CEUX_{start:%Y%m%d_%H%M}.csv"
-        p.write_text("\n".join(zeilen))
+        p.write_text("\n".join(zeilen), encoding="utf-8")
         print(p, len(zeilen), "Zeilen")
 
 
@@ -102,7 +102,7 @@ def demo_starten(a):
     konfig.mkdir(parents=True, exist_ok=True)
     ki = daten / "analysen" / "ki.json"
     if not ki.exists():
-        ki.write_text('{"routinen": false}')                    # keine täglichen Claude-Läufe in der Demo
+        ki.write_text('{"routinen": false}', encoding="utf-8")                    # keine täglichen Claude-Läufe in der Demo
     src = pathlib.Path(__file__).resolve().parent.parent
     stopp = daten / ".stopp"                                  # „Demo stoppen“ im Browser legt diese Datei an
     stopp.unlink(missing_ok=True)
@@ -145,7 +145,7 @@ def demo_starten(a):
                 p.wait(10)
             except subprocess.TimeoutExpired:
                 p.kill()
-        if stopp.exists() and stopp.read_text().strip() == "loeschen":
+        if stopp.exists() and stopp.read_text(encoding="utf-8").strip() == "loeschen":
             if "demo" in daten.name and daten != pathlib.Path("~/.local/share/marktdaten").expanduser():
                 shutil.rmtree(daten, ignore_errors=True)
                 print("Demo im Browser beendet, Demo-Daten gelöscht:", daten)

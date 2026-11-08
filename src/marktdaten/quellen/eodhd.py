@@ -37,7 +37,7 @@ def schluessel_vorhanden() -> bool:
 def _token() -> str:
     t = os.environ.get("EODHD_API_TOKEN", "")
     if not t and _datei().exists():
-        for z in _datei().read_text().splitlines():
+        for z in _datei().read_text(encoding="utf-8").splitlines():
             k, _, v = z.partition("=")
             if k.strip() == "EODHD_API_TOKEN":
                 t = v.strip()
@@ -54,7 +54,7 @@ def stand() -> dict:
     """Zähler und Merkzettel: {tag, abrufe, letzter, kuerzel: {id: Code}, werte: {id: {...}}}."""
     with _lock:
         try:
-            d = json.loads(STAND.read_text())
+            d = json.loads(STAND.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             d = {}
     heute = datetime.now(UTC).date().isoformat()
@@ -68,7 +68,7 @@ def _sichern(d: dict) -> None:
     with _lock:
         STAND.parent.mkdir(parents=True, exist_ok=True)
         tmp = STAND.with_suffix(".tmp")
-        tmp.write_text(json.dumps(d, ensure_ascii=False, indent=1))
+        tmp.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
         tmp.replace(STAND)
 
 

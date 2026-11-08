@@ -52,7 +52,7 @@ class Einstellungen(Basis):
         self.assertFalse(E.orderbuch())
         E.speichern(eingerichtet="2026-10-21T05:00:00+02:00")
         self.assertFalse(E.offen())
-        text = E.DATEI.read_text()
+        text = E.DATEI.read_text(encoding="utf-8")
         self.assertIn('betriebsart = "pc"   # server | miete | pc', text)
         self.assertEqual(E.laden()["betriebsart"], "pc")
 
@@ -88,11 +88,11 @@ class Schluessel(Basis):
     def test_datei_nur_fuer_nutzer_und_andere_zeilen_bleiben(self):
         p = self.dateien["telegram"]
         p.parent.mkdir(parents=True)
-        p.write_text("# Kommentar\nTELEGRAM_TOKEN=alt\nTELEGRAM_CHAT=42\nANDERES=1\n")
+        p.write_text("# Kommentar\nTELEGRAM_TOKEN=alt\nTELEGRAM_CHAT=42\nANDERES=1\n", encoding="utf-8")
         with mock.patch.object(E, "_anfrage", return_value=(200, {"result": {"username": "testbot"}})):
             d = E.schluessel_setzen("telegram", {"TELEGRAM_TOKEN": GEHEIM})
         self.assertTrue(d["ok"])
-        text = p.read_text()
+        text = p.read_text(encoding="utf-8")
         self.assertIn(f"TELEGRAM_TOKEN={GEHEIM}", text)
         self.assertNotIn("TELEGRAM_CHAT", text)               # neuer Bot: alter Chat gilt nicht mehr
         self.assertIn("ANDERES=1", text)
@@ -115,7 +115,7 @@ class Schluessel(Basis):
 
     def test_fehler_ohne_url_und_ohne_wert(self):
         self.dateien["eodhd"].parent.mkdir(parents=True)
-        self.dateien["eodhd"].write_text(f"EODHD_API_TOKEN={GEHEIM}\n")
+        self.dateien["eodhd"].write_text(f"EODHD_API_TOKEN={GEHEIM}\n", encoding="utf-8")
         with mock.patch.object(E, "_anfrage", return_value=(401, {})):
             d = E.pruefen("eodhd")
         self.assertFalse(d["ok"])
@@ -155,14 +155,14 @@ class Schluessel(Basis):
 
     def test_telegram_chat_finden(self):
         self.dateien["telegram"].parent.mkdir(parents=True)
-        self.dateien["telegram"].write_text(f"TELEGRAM_TOKEN={GEHEIM}\n")
+        self.dateien["telegram"].write_text(f"TELEGRAM_TOKEN={GEHEIM}\n", encoding="utf-8")
         with mock.patch.object(E, "_anfrage", return_value=(200, {"result": []})):
             self.assertIn("/start", E.telegram_chat()["text"])
         antworten = iter([(200, {"result": [{"message": {"chat": {"id": 777}}}]}), (200, {"ok": True})])
         with mock.patch.object(E, "_anfrage", side_effect=lambda *a, **k: next(antworten)):
             d = E.telegram_chat()
         self.assertTrue(d["ok"])
-        self.assertIn("TELEGRAM_CHAT=777", self.dateien["telegram"].read_text())
+        self.assertIn("TELEGRAM_CHAT=777", self.dateien["telegram"].read_text(encoding="utf-8"))
 
 
 class Vorlagen(Basis):
@@ -201,7 +201,7 @@ class DemoImTerminal(Basis):
                 E.demo_weiter()                                  # „Nein“: nächste Frage in 10 Minuten
             self.assertFalse(E.demo_stand(jetzt=2200)["frage"])
             E.demo_stand(jetzt=2300 + 600)                       # Frage um 2300 blieb 10 Minuten offen
-            self.assertEqual((self.sp.datei.parent / ".stopp").read_text(), "loeschen")
+            self.assertEqual((self.sp.datei.parent / ".stopp").read_text(encoding="utf-8"), "loeschen")
 
     def test_stoppen_nur_in_der_demo_im_terminal(self):
         self.assertFalse(E.post("/api/einrichtung/demo/stoppen", {})["ok"])

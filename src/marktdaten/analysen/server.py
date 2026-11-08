@@ -275,12 +275,12 @@ class Handler(BaseHTTPRequestHandler):
             elif url.path == "/api/pruefstand":                    # Studien (schreibt der Agenten-Server)
                 if f1("id"):
                     p_ = PRUEFSTAND / (re.sub(r"[^a-z0-9]", "", f1("id")) + ".json")
-                    self._json(json.loads(p_.read_text()) if p_.exists() else {"fehler": "unbekannt"}, 200 if p_.exists() else 404)
+                    self._json(json.loads(p_.read_text(encoding="utf-8")) if p_.exists() else {"fehler": "unbekannt"}, 200 if p_.exists() else 404)
                 else:
                     studien = []
                     for p_ in PRUEFSTAND.glob("*.json") if PRUEFSTAND.exists() else []:
                         try:
-                            x = json.loads(p_.read_text())
+                            x = json.loads(p_.read_text(encoding="utf-8"))
                         except ValueError:
                             continue
                         e = x.get("ergebnis") or {}

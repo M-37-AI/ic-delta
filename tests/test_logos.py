@@ -41,7 +41,7 @@ class Logos(unittest.TestCase):
 
     def test_eigene_datei_hat_vorrang(self):
         logos.EIGEN.mkdir(parents=True)
-        (logos.EIGEN / "SAP.svg").write_text("<svg></svg>")
+        (logos.EIGEN / "SAP.svg").write_text("<svg></svg>", encoding="utf-8")
         self.assertEqual(logos.datei("DE0007164600", "SAP").name, "SAP.svg")
         self.assertEqual(logos.uebersicht(self.z)["symbol"]["SAP"].split("?")[0], "/logo/DE0007164600")
 

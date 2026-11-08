@@ -48,7 +48,7 @@ def _logodev_token() -> str:
     t = os.environ.get("LOGODEV_TOKEN", "")
     datei = pathlib.Path(os.environ.get("MARKTDATEN_LOGOS_ENV", "~/.config/marktdaten/logos.env")).expanduser()
     if not t and datei.exists():
-        for z in datei.read_text().splitlines():
+        for z in datei.read_text(encoding="utf-8").splitlines():
             k, _, v = z.partition("=")
             if k.strip() == "LOGODEV_TOKEN":
                 t = v.strip()
@@ -84,7 +84,7 @@ class Logos(threading.Thread):
 
     def _stand(self) -> dict:
         try:
-            return json.loads(self.stand_datei.read_text())
+            return json.loads(self.stand_datei.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             return {}
 
@@ -122,7 +122,7 @@ class Logos(threading.Thread):
                 stand[w.id] = {"versuch": time.time(), "ok": True}
             except Exception as e:                              # Fehler ohne Adresse melden (Schlüssel stehen in der URL)
                 stand[w.id] = {"versuch": time.time(), "ok": False, "fehler": f"{type(e).__name__} {getattr(e, 'code', '')}".strip()}
-            self.stand_datei.write_text(json.dumps(stand))
+            self.stand_datei.write_text(json.dumps(stand), encoding="utf-8")
         self.z.melden("logos", vorhanden=sum(1 for w in werte if datei(w.id, w.symbol)), werte=len(werte))
 
     def run(self) -> None:

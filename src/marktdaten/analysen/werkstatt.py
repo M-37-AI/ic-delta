@@ -155,19 +155,19 @@ class Werkstatt:
         aus = []
         for p in ORT.glob("*.json"):
             try:
-                aus.append(json.loads(p.read_text()))
+                aus.append(json.loads(p.read_text(encoding="utf-8")))
             except ValueError:
                 continue
         return sorted(aus, key=lambda a: a.get("geaendert", ""), reverse=True)
 
     def lesen(self, id_: str) -> dict | None:
         p = ORT / f"{id_}.json"
-        return json.loads(p.read_text()) if p.exists() else None
+        return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
 
     def _speichern(self, a: dict) -> None:
         a["geaendert"] = _jetzt()
         tmp = ORT / f"{a['id']}.tmp"
-        tmp.write_text(json.dumps(a, ensure_ascii=False, indent=1))
+        tmp.write_text(json.dumps(a, ensure_ascii=False, indent=1), encoding="utf-8")
         tmp.replace(ORT / f"{a['id']}.json")
 
     def _aufraeumen(self) -> None:
@@ -231,7 +231,7 @@ class Werkstatt:
 
     # --- Ergebnisse angepinnter Analysen je Wert und Tag ----------------------------------------------------
     def _ergebnis_speichern(self, id_: str, isin: str, tag: str, ergebnis: dict) -> None:
-        (ERGEBNISSE / f"{id_}.{isin}.{tag}.json").write_text(json.dumps({"stand": self.roh.stand(tag), **ergebnis}, ensure_ascii=False))
+        (ERGEBNISSE / f"{id_}.{isin}.{tag}.json").write_text(json.dumps({"stand": self.roh.stand(tag), **ergebnis}, ensure_ascii=False), encoding="utf-8")
 
     def ergebnis(self, id_: str, wert: str, tag: str, neu: bool = False) -> dict:
         a = self.lesen(id_)
@@ -240,7 +240,7 @@ class Werkstatt:
         w = self._wert(wert)
         p = ERGEBNISSE / f"{id_}.{w['id']}.{tag}.json"
         if p.exists() and not neu:
-            alt = json.loads(p.read_text())
+            alt = json.loads(p.read_text(encoding="utf-8"))
             if alt.get("stand") == self.roh.stand(tag) and alt.get("ok"):
                 return {"id": id_, "titel": a["titel"], "wert": w, "tag": tag, **alt}
         ergebnis = ausfuehren(a["code"], w["id"], tag)

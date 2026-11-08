@@ -49,7 +49,7 @@ HILFE = ("Ich bin Claude in iC Delta. Schreib mir eine Frage zu einem Wert der W
 def _telegram() -> dict:
     try:
         werte = {}
-        for z in TELEGRAM.read_text().splitlines():
+        for z in TELEGRAM.read_text(encoding="utf-8").splitlines():
             if "=" in z and not z.lstrip().startswith("#"):
                 k, v = z.split("=", 1)
                 werte[k.strip()] = v.strip().strip('"').strip("'")
@@ -110,12 +110,12 @@ def _foto(chat: str, pfad: pathlib.Path, unterschrift: str = "") -> None:
 
 def ruhe_stand() -> dict:
     try:
-        bis = json.loads(RUHE.read_text())["bis"]
+        bis = json.loads(RUHE.read_text(encoding="utf-8"))["bis"]
     except (OSError, ValueError, KeyError):
         return {"an": False}
     if bis < time.time():
         return {"an": False}
-    n = len(ZURUECK.read_text().splitlines()) if ZURUECK.exists() else 0
+    n = len(ZURUECK.read_text(encoding="utf-8").splitlines()) if ZURUECK.exists() else 0
     return {"an": True, "bis": bis, "zurueckgehalten": n}
 
 
@@ -124,7 +124,7 @@ def ruhe_setzen(an: bool, minuten: float = 180) -> dict:
     Antworten auf eigene Fragen gehen weiter sofort raus. Ruhe endet spätestens nach minuten."""
     ORT.mkdir(parents=True, exist_ok=True)
     if an:
-        RUHE.write_text(json.dumps({"bis": time.time() + min(max(minuten, 5), 600) * 60}))
+        RUHE.write_text(json.dumps({"bis": time.time() + min(max(minuten, 5), 600) * 60}), encoding="utf-8")
     else:
         RUHE.unlink(missing_ok=True)
         nachreichen()
@@ -135,7 +135,7 @@ def nachreichen() -> int:
     """Zurückgehaltene Meldungen senden, sobald die Ruhe vorbei ist."""
     if ruhe_stand()["an"] or not ZURUECK.exists():
         return 0
-    zeilen = [json.loads(z) for z in ZURUECK.read_text().splitlines() if z.strip()]
+    zeilen = [json.loads(z) for z in ZURUECK.read_text(encoding="utf-8").splitlines() if z.strip()]
     ZURUECK.unlink(missing_ok=True)
     for i, m in enumerate(zeilen):
         kopf = f"⏸ <i>Während der Demo zurückgehalten ({i + 1}/{len(zeilen)})</i>\n"
@@ -150,7 +150,7 @@ def telegram_senden(text: str, bilder: list | None = None, antwort: bool = False
     if not chat:
         return "Telegram nicht eingerichtet"
     if not antwort and ruhe_stand()["an"]:                     # Demo läuft: später nachreichen
-        with open(ZURUECK, "a") as f:
+        with open(ZURUECK, "a", encoding="utf-8") as f:
             f.write(json.dumps({"text": text, "bilder": bilder or []}, ensure_ascii=False) + "\n")
         return None
     try:
@@ -249,7 +249,7 @@ def telegram_einrichten() -> None:
         if not chats:
             print("Keine Nachricht gefunden. Schreib dem Bot in Telegram einmal /start und starte den Befehl erneut.")
             return
-        with open(TELEGRAM, "a") as f:
+        with open(TELEGRAM, "a", encoding="utf-8") as f:
             f.write(f"\nTELEGRAM_CHAT={chats[-1]}\n")
         print("Chat gefunden und gespeichert.")
     fehler = telegram_senden("✅ <b>iC Delta</b>: Alarme kommen ab jetzt hier an. Du kannst mir hier auch Fragen stellen.")
@@ -331,7 +331,7 @@ class Alarme:
     def __init__(self):
         ORT.mkdir(parents=True, exist_ok=True)
         self.lock = threading.RLock()
-        self.regeln: list[dict] = json.loads(REGELN.read_text()) if REGELN.exists() else []
+        self.regeln: list[dict] = json.loads(REGELN.read_text(encoding="utf-8")) if REGELN.exists() else []
         self.fehler: str | None = None
         self.geprueft: str | None = None
         self.telegram_fehler: str | None = None
@@ -339,7 +339,7 @@ class Alarme:
 
     def _speichern(self) -> None:
         tmp = REGELN.with_suffix(".tmp")
-        tmp.write_text(json.dumps(self.regeln, ensure_ascii=False, indent=1))
+        tmp.write_text(json.dumps(self.regeln, ensure_ascii=False, indent=1), encoding="utf-8")
         tmp.replace(REGELN)
 
     def liste(self) -> list[dict]:
@@ -349,7 +349,7 @@ class Alarme:
     def verlauf(self, n: int = 50) -> list[dict]:
         if not VERLAUF.exists():
             return []
-        return [json.loads(z) for z in VERLAUF.read_text().splitlines()[-n:]][::-1]
+        return [json.loads(z) for z in VERLAUF.read_text(encoding="utf-8").splitlines()[-n:]][::-1]
 
     def anlegen(self, d: dict) -> dict:
         werte = {w["id"]: w for w in lesen.watchlist()}
@@ -512,7 +512,7 @@ class Alarme:
 
     # --- Melden ---------------------------------------------------------------------------------------------
     def _verlauf(self, eintrag: dict) -> None:
-        with self.lock, open(VERLAUF, "a") as f:
+        with self.lock, open(VERLAUF, "a", encoding="utf-8") as f:
             f.write(json.dumps(eintrag, ensure_ascii=False) + "\n")
 
     def melden(self, r: dict, text: str) -> None:

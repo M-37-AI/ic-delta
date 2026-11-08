@@ -10,7 +10,7 @@ import unittest
 from marktdaten.analysen.charts import _ema
 from marktdaten.analysen.formationen import atr, rsi, sma
 
-REF = json.loads((pathlib.Path(__file__).parent / "daten" / "indikatoren_referenz.json").read_text())
+REF = json.loads((pathlib.Path(__file__).parent / "daten" / "indikatoren_referenz.json").read_text(encoding="utf-8"))
 K = [[b["time"], b["open"], b["high"], b["low"], b["close"], b["volume"]] for b in REF["kerzen"]]
 C = [k[4] for k in K]
 T = REF["talib"]

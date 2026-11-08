@@ -69,7 +69,7 @@ def main() -> None:
     }
     ZIEL.parent.mkdir(parents=True, exist_ok=True)
     ZIEL.write_text(json.dumps({"erzeugt_mit": f"TA-Lib {talib.__version__}", "hinweis": "Frei erzeugte Kerzen, keine Marktdaten.",
-                                "kerzen": b, "talib": ref}, separators=(",", ":")))
+                                "kerzen": b, "talib": ref}, separators=(",", ":")), encoding="utf-8")
     print(f"{ZIEL} · {len(b)} Kerzen · {len(ref)} Reihen")
 
 

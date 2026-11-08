@@ -331,7 +331,7 @@ class DemoSammler(threading.Thread):
         if not SZENEN.exists():
             return
         jetzt = time.time()
-        for zeile in SZENEN.read_text().splitlines():
+        for zeile in SZENEN.read_text(encoding="utf-8").splitlines():
             try:
                 s = json.loads(zeile)
             except ValueError:
@@ -435,6 +435,6 @@ def szene(art: str, wert: str, prozent: float = 2.0, minuten: float = 3.0, seite
     s = {"id": uuid.uuid4().hex[:8], "art": art, "wert": wert.upper() if not wert.startswith("ZZ") else wert, "prozent": float(prozent),
          "start": time.time() + in_sekunden, "dauer": minuten * 60 if art not in ("sprung_auf", "sprung_ab") else max(20, minuten * 60 / 6), "seite": seite}
     SZENEN.parent.mkdir(parents=True, exist_ok=True)
-    with open(SZENEN, "a") as f:
+    with open(SZENEN, "a", encoding="utf-8") as f:
         f.write(json.dumps(s) + "\n")
     return s

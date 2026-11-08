@@ -123,7 +123,7 @@ def laden() -> dict:
         return {}
     if _mtime["t"] != t:
         try:
-            _mtime.update(t=t, werte=tomllib.loads(DATEI.read_text()))
+            _mtime.update(t=t, werte=tomllib.loads(DATEI.read_text(encoding="utf-8")))
         except (OSError, tomllib.TOMLDecodeError):
             _mtime.update(t=t, werte={})
     return dict(_mtime["werte"])
@@ -150,7 +150,7 @@ def speichern(**neu) -> dict:
         for k, v in werte.items():
             zeilen.append(f"{k} = {_toml(v)}" + (f"   # {KOMMENTARE[k]}" if k in KOMMENTARE else ""))
         DATEI.parent.mkdir(parents=True, exist_ok=True)
-        DATEI.write_text("\n".join(zeilen) + "\n")
+        DATEI.write_text("\n".join(zeilen) + "\n", encoding="utf-8")
         return laden()
 
 
@@ -179,7 +179,7 @@ def _env_lesen(pfad: pathlib.Path) -> dict[str, str]:
     """Nur für den Gebrauch im Dienst selbst (Prüfen, Ergänzen); Werte verlassen diese Datei nie."""
     werte = {}
     try:
-        for z in pfad.read_text().splitlines():
+        for z in pfad.read_text(encoding="utf-8").splitlines():
             if "=" in z and not z.lstrip().startswith("#"):
                 k, v = z.split("=", 1)
                 werte[k.strip()] = v.strip().strip('"').strip("'")
@@ -192,7 +192,7 @@ def _env_schreiben(pfad: pathlib.Path, setzen: dict[str, str], entfernen: tuple 
     """Variablen setzen, andere Zeilen behalten; Datei nur für den Nutzer lesbar."""
     zeilen, gesetzt = [], set()
     try:
-        alt = pfad.read_text().splitlines()
+        alt = pfad.read_text(encoding="utf-8").splitlines()
     except OSError:
         alt = []
     for z in alt:
@@ -424,7 +424,7 @@ def autostart() -> dict:
         ordner = pathlib.Path("~/Library/LaunchAgents").expanduser()
         for p in sorted(ordner.glob("*.plist")) if ordner.exists() else []:
             try:
-                t = p.read_text(errors="ignore")
+                t = p.read_text(errors="ignore", encoding="utf-8")
             except OSError:
                 continue
             if "marktdaten" in t and "dashboard" in t and str(ports.DASHBOARD) in t:
@@ -432,7 +432,7 @@ def autostart() -> dict:
         return {"ok": False, "text": "kein launchd-Dienst gefunden – einrichten.sh legt ihn an"}
     if system == "Linux":
         ordner = pathlib.Path("~/.config/systemd/user").expanduser()
-        treffer = [p for p in ordner.glob("*.service") if "marktdaten" in p.read_text(errors="ignore")] if ordner.exists() else []
+        treffer = [p for p in ordner.glob("*.service") if "marktdaten" in p.read_text(errors="ignore", encoding="utf-8")] if ordner.exists() else []
         return {"ok": bool(treffer), "text": f"systemd: {treffer[0].name}" if treffer else "kein systemd-Dienst gefunden"}
     return {"ok": None, "text": f"{system}: Autostart nicht geprüft"}
 
@@ -535,7 +535,7 @@ def demo_stoppen() -> dict:
         return {"ok": False, "text": "nur für die Demo im Terminal"}
     ordner = _demo_ordner()
     if ordner:
-        (ordner / ".stopp").write_text("loeschen")
+        (ordner / ".stopp").write_text("loeschen", encoding="utf-8")
     _demo["gestoppt"] = True
     return {"ok": True, "echt": ports.GEGENSTUECK if demo_laeuft() else None}
 

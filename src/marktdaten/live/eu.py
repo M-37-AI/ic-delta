@@ -80,7 +80,7 @@ def ablegen(name: str, zeilen: list[bytes], isins: set[bytes], tag: str) -> None
     tmp = ziel.with_name(ziel.name + ".tmp")
     tmp.write_bytes(gzip.compress(b"".join(z if z.endswith(b"\n") else z + b"\n" for z in zeilen)))
     tmp.replace(ziel)
-    with _INDEX_LOCK, open(ordner / "index.jsonl", "a") as f:
+    with _INDEX_LOCK, open(ordner / "index.jsonl", "a", encoding="utf-8") as f:
         f.write(json.dumps({"datei": ziel.name, "isins": sorted(i.decode() for i in isins), "zeilen": len(zeilen)}) + "\n")
 
 

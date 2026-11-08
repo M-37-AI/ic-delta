@@ -81,9 +81,9 @@ class Lesen(unittest.TestCase):
             namen = {"DETR-posttrade-2026-10-19T08_00.json.gz": [ISIN, "ZZ0000000029"],
                      f"DETR-posttrade-2026-10-19T08_00.json.{ISIN}.gz": [ISIN],        # Einzelablage derselben Minute
                      "DETR-posttrade-2026-10-19T08_01.json.ZZ0000000029.gz": ["ZZ0000000029"]}
-            with open(tag / "index.jsonl", "w") as idx:
+            with open(tag / "index.jsonl", "w", encoding="utf-8") as idx:
                 for n, isins in namen.items():
-                    with gzip.open(tag / n, "wt") as f:
+                    with gzip.open(tag / n, "wt", encoding="utf-8") as f:
                         f.write(zeile + "\n")
                     idx.write(json.dumps({"datei": n, "isins": isins, "zeilen": 1}) + "\n")
             r = Rohdaten(pathlib.Path(d))

@@ -61,7 +61,7 @@ class Rohdaten:
         aus: dict[str, list[str] | None] = {p.name: None for p in d.glob("*.gz")} if d.exists() else {}
         p = d / "index.jsonl"
         if p.exists():
-            for z in p.read_text().splitlines():
+            for z in p.read_text(encoding="utf-8").splitlines():
                 try:
                     x = json.loads(z)
                 except ValueError:

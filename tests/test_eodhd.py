@@ -50,7 +50,7 @@ class Historie(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         t = pathlib.Path(self.tmp.name)
-        (t / "eodhd.env").write_text("EODHD_API_TOKEN=nur-ein-test\n")
+        (t / "eodhd.env").write_text("EODHD_API_TOKEN=nur-ein-test\n", encoding="utf-8")
         self.env = mock.patch.dict(os.environ, {"MARKTDATEN_EODHD_ENV": str(t / "eodhd.env")})
         self.stand = mock.patch.object(E, "STAND", t / "eodhd.json")
         self.env.start(); self.stand.start()

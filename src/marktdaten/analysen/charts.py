@@ -271,7 +271,7 @@ def uebersicht(neu: bool = False) -> dict:
 # --- Einordnung durch Claude ------------------------------------------------------------------------------------
 def claude_lesen() -> dict | None:
     try:
-        return json.loads(CLAUDE.read_text())
+        return json.loads(CLAUDE.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return None
 
@@ -320,7 +320,7 @@ def claude_starten() -> dict:
                         "stand_daten": {x["wert"]["symbol"]: x["zeit"] for x in werte}}
             ORT.mkdir(parents=True, exist_ok=True)
             tmp = CLAUDE.with_suffix(".tmp")
-            tmp.write_text(json.dumps(ergebnis, ensure_ascii=False, indent=1))
+            tmp.write_text(json.dumps(ergebnis, ensure_ascii=False, indent=1), encoding="utf-8")
             tmp.replace(CLAUDE)
         except Exception as e:
             LAEUFT["fehler"] = f"{type(e).__name__}: {str(e)[:200]}"
