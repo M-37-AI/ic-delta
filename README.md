@@ -52,6 +52,8 @@ und du bist selbst dafür verantwortlich, sie einzuhalten. Kurzfassung (Stand Ok
 
 ## Installation
 
+macOS und Linux:
+
 ```bash
 git clone <repo-url> && cd ic-delta
 python3 -m venv .venv && source .venv/bin/activate
@@ -59,7 +61,20 @@ pip install -e .            # ohne Abhängigkeiten
 pip install -e ".[live]"    # für den Alpaca-Live-Strom (websockets)
 ```
 
-Python 3.11 oder neuer. Der Kern nutzt nur die Standardbibliothek.
+Windows (PowerShell oder Eingabeaufforderung):
+
+```powershell
+git clone <repo-url>
+cd ic-delta
+py -m venv .venv
+.venv\Scripts\activate
+pip install -e .            # installiert tzdata für die Zeitzonen mit
+pip install -e ".[live]"    # für den Alpaca-Live-Strom (websockets)
+```
+
+Python 3.11 oder neuer. Der Kern nutzt nur die Standardbibliothek, unter Windows kommt `tzdata` dazu.
+iC Delta läuft unter macOS, Linux und Windows. Nur die Werkstatt (Analyse-Code, den die KI schreibt) gibt es
+ausschließlich auf macOS: Sie führt den Code im Sandkasten `sandbox-exec` aus, und ohne Sandkasten läuft er nicht.
 
 ## Schnellstart
 
