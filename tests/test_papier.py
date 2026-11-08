@@ -1,6 +1,7 @@
 """Papierhandel mit eigenem Speicher und Attrappen für Telegram und Agent: Ausführung, Limits, Stopps, FIFO, nur long."""
 import pathlib
 import tempfile
+import threading
 import time
 import unittest
 from datetime import datetime
@@ -13,6 +14,7 @@ from marktdaten.live.zustand import Wert, Zustand
 
 class Papierhandel(unittest.TestCase):
     def setUp(self):
+        self.faeden = set(threading.enumerate())
         self.tmp = tempfile.TemporaryDirectory()
         self.alt = papier._post
         self.gesendet = []
@@ -24,7 +26,10 @@ class Papierhandel(unittest.TestCase):
         self.kurs(100.0)
 
     def tearDown(self):
+        for f in set(threading.enumerate()) - self.faeden:    # Meldungs-Fäden schreiben noch in die Datenbank
+            f.join(5)
         papier._post = self.alt
+        self.z.speicher.db.close()                   # Windows sperrt offene Dateien beim Aufräumen
         self.tmp.cleanup()
 
     def kurs(self, preis, buch=None):

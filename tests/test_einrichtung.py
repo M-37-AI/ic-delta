@@ -2,6 +2,7 @@
 import json
 import os
 import pathlib
+import shutil
 import stat
 import tempfile
 import threading
@@ -41,6 +42,8 @@ class Basis(unittest.TestCase):
     def tearDown(self):
         for p in reversed(self.patches):
             p.stop()
+        self.sp.db.close()                           # Windows sperrt offene Dateien beim Aufräumen
+        shutil.rmtree(self.tmp)
 
 
 class Einstellungen(Basis):
@@ -187,7 +190,11 @@ class Herzschlag(Basis):
         self.assertEqual(o["seit"], t0 + 50 * 60)
         self.assertFalse(o["steht"])
         self.assertTrue(E.online(self.sp, jetzt=t0 + 70 * 60)["steht"])
-        self.assertIsNone(E.online(Speicher(self.tmp / "leer"))["letzter"])
+        leer = Speicher(self.tmp / "leer")
+        try:
+            self.assertIsNone(E.online(leer)["letzter"])
+        finally:
+            leer.db.close()
 
 
 class DemoImTerminal(Basis):

@@ -29,6 +29,7 @@ class Anlauf(unittest.TestCase):
 
     def tearDown(self):
         us.datetime = self.alt
+        self.z.speicher.db.close()                   # Windows sperrt offene Dateien beim Aufräumen
         self.tmp.cleanup()
 
     def test_nachts_ohne_minutenkerzen(self):

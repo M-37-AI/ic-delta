@@ -127,6 +127,7 @@ class SpeicherTest(unittest.TestCase):
         self.sp = Speicher(pathlib.Path(self.ordner.name))
 
     def tearDown(self):
+        self.sp.db.close()                           # Windows sperrt offene Dateien beim Aufräumen
         self.ordner.cleanup()
 
     def test_tabellen_schreiben_und_aufraeumen(self):

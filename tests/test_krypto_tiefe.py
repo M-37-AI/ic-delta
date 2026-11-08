@@ -49,6 +49,7 @@ class Sammler(unittest.TestCase):
         self.z = Zustand(self.sp)
 
     def tearDown(self):
+        self.sp.db.close()                           # Windows sperrt offene Dateien beim Aufräumen
         self.ordner.cleanup()
 
     def test_minute_mitteln_und_schreiben(self):

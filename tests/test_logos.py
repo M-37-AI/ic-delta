@@ -23,6 +23,7 @@ class Logos(unittest.TestCase):
 
     def tearDown(self):
         logos.ORDNER, logos.EIGEN = self.alt
+        self.z.speicher.db.close()                   # Windows sperrt offene Dateien beim Aufräumen
         self.tmp.cleanup()
 
     def test_holen_speichern_und_fehlschlag_merken(self):
