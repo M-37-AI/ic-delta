@@ -118,9 +118,10 @@ VERBINDUNG: dict = {}                              # vom Server: zustand, speich
 # --- Einstellungsdatei -------------------------------------------------------------------------
 def laden() -> dict:
     try:
-        t = DATEI.stat().st_mtime
+        st = DATEI.stat()
     except OSError:
         return {}
+    t = (st.st_mtime_ns, st.st_size)     # Größe dazu: unter Windows ist der Zeitstempel grob (zwei Schreibvorgänge, ein Wert)
     if _mtime["t"] != t:
         try:
             _mtime.update(t=t, werte=tomllib.loads(DATEI.read_text(encoding="utf-8")))
@@ -151,6 +152,7 @@ def speichern(**neu) -> dict:
             zeilen.append(f"{k} = {_toml(v)}" + (f"   # {KOMMENTARE[k]}" if k in KOMMENTARE else ""))
         DATEI.parent.mkdir(parents=True, exist_ok=True)
         DATEI.write_text("\n".join(zeilen) + "\n", encoding="utf-8")
+        _mtime["t"] = None                # eigener Schreibvorgang: immer neu lesen, nicht auf den Zeitstempel verlassen
         return laden()
 
 

@@ -47,6 +47,20 @@ class Basis(unittest.TestCase):
 
 
 class Einstellungen(Basis):
+    def test_schnell_hintereinander_speichern(self):
+        """Unter Windows haben zwei schnelle Schreibvorgänge oft denselben Zeitstempel: trotzdem den neuen Stand lesen."""
+        original = pathlib.Path.write_text
+        def gleicher_zeitstempel(pfad, *a, **k):
+            n = original(pfad, *a, **k)
+            os.utime(pfad, ns=(1_700_000_000_000_000_000, 1_700_000_000_000_000_000))
+            return n
+        with mock.patch.object(pathlib.Path, "write_text", gleicher_zeitstempel):
+            E.speichern(betriebsart="pc")
+            E.speichern(betriebsart="pc", eingerichtet="2026-10-21T05:00:00+02:00")
+            self.assertFalse(E.offen())
+            E.speichern(eingerichtet="2026-10-22T06:00:00+02:00")  # gleicher Zeitstempel und gleiche Dateigröße
+            self.assertEqual(E.laden()["eingerichtet"], "2026-10-22T06:00:00+02:00")
+
     def test_offen_bis_fertig_und_toml_lesbar(self):
         self.assertTrue(E.offen())
         self.assertTrue(E.orderbuch())                         # ohne Einstellung wie bisher: Orderbuch an
