@@ -100,7 +100,8 @@ class Schluessel(Basis):
         self.assertNotIn("TELEGRAM_CHAT", text)               # neuer Bot: alter Chat gilt nicht mehr
         self.assertIn("ANDERES=1", text)
         self.assertIn("# Kommentar", text)
-        self.assertEqual(stat.S_IMODE(p.stat().st_mode), 0o600)
+        if os.name != "nt":                                     # Windows kennt nur den Schreibschutz, keine Rechte 0600
+            self.assertEqual(stat.S_IMODE(p.stat().st_mode), 0o600)
         self.assertNotIn(GEHEIM, json.dumps(d))
         self.assertEqual(d["bot"], "testbot")
         self.assertFalse(d["chat"])
