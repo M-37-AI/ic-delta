@@ -1,0 +1,43 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: ${{ matrix.os }} · Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        python: ["3.11", "3.12"]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Installieren
+        run: python -m pip install -e .
+      - name: Unittests
+        run: python -m unittest discover -s tests -v
+      - name: Indikatoren (JavaScript)
+        run: node tests/js/test_indikatoren.cjs
+      - name: Rauchtest Quellen und Analysen-Dienst
+        run: |
+          python -m marktdaten quellen
+          python -c "import marktdaten.analysen.server"
+      - name: Rauchtest Demo (HTTP)
+        run: python tests/werkzeuge/rauchtest_demo.py 18822
