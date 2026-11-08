@@ -55,7 +55,7 @@ und du bist selbst dafür verantwortlich, sie einzuhalten. Kurzfassung (Stand Ok
 macOS und Linux:
 
 ```bash
-git clone <repo-url> && cd ic-delta
+git clone https://github.com/M-37-AI/ic-delta.git && cd ic-delta
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e .            # ohne Abhängigkeiten
 pip install -e ".[live]"    # für den Alpaca-Live-Strom (websockets)
@@ -64,13 +64,15 @@ pip install -e ".[live]"    # für den Alpaca-Live-Strom (websockets)
 Windows (PowerShell oder Eingabeaufforderung):
 
 ```powershell
-git clone <repo-url>
+git clone https://github.com/M-37-AI/ic-delta.git
 cd ic-delta
 py -m venv .venv
-.venv\Scripts\activate
+.venv\Scripts\Activate.ps1   # PowerShell; in der Eingabeaufforderung: .venv\Scripts\activate.bat
 pip install -e .            # installiert tzdata für die Zeitzonen mit
 pip install -e ".[live]"    # für den Alpaca-Live-Strom (websockets)
 ```
+
+Sperrt PowerShell das Aktivieren, hilft einmal `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 
 Python 3.11 oder neuer. Der Kern nutzt nur die Standardbibliothek, unter Windows kommt `tzdata` dazu.
 iC Delta läuft unter macOS, Linux und Windows. Nur die Werkstatt (Analyse-Code, den die KI schreibt) gibt es
